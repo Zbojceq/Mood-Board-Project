@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mood Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.8/lottie.min.js"></script>
+</head>
+<body>
+  <div class="background"></div>
+  <header><h1>Mood Tracker</h1></header>
+
+  <main>
+    <section class="top-row">
+      <div class="card">
+        <h2>Kalendarz emocji</h2>
+        <div class="calendar-header">
+          <button onclick="prevMonth()">&#8592;</button>
+          <span id="monthYear"></span>
+          <button onclick="nextMonth()">&#8594;</button>
+        </div>
+        <div class="weekday-header">
+          <div>Pon</div><div>Wto</div><div>Śro</div><div>Czw</div><div>Pią</div><div>Sob</div><div>Nie</div>
+        </div>
+        <div class="calendar" id="calendar"></div>
+      </div>
+      <div class="card">
+        <h2>Statystyki</h2>
+        <canvas id="moodChart" height="180"></canvas>
+        <canvas id="moodLineChart" height="180"></canvas>
+      </div>
+    </section>
+
+    <section class="bottom-row">
+      <div class="card chat-card">
+        <h2>Wiadomości</h2>
+        <div class="chatbox" id="chatbox"></div>
+    <div class="chat-input">
+      <input type="text" id="chatMessage" placeholder="Napisz wiadomość..." />
+      <button onclick="sendMessage()">Wyślij</button>
+    </div>
+      </div>
+      <div class="card notif-card">
+        <h2>Powiadomienia</h2>
+        <div id="notificationAnim" class="lottie"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="scripts.js"></script>
+</body>
+</html>

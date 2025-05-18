@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>MoodBoard Settings</h1>
+    </header>
+
+    <div class="container">
+        <div class="content">
+            <div class="lottie-container">
+                <lottie-player src="https://lottie.host/0317a4ce-77a4-4a99-bbf3-720197af7d98/amAT1mWdeH.json" 
+                    background="transparent" 
+                    speed="1" 
+                    style="width: 300px; height: 300px;" 
+                    loop autoplay>
+                </lottie-player>
+            </div>
+
+            <div class="buttons">
+                <button>Delete Account</button>
+                <button>Log Out</button>
+            </div>
+
+            <div class="settings">
+                <section class="settings-section" id="accountSettings">
+                    <h2>Account Settings</h2>
+                    <div class="content">
+                        <input type="text" placeholder="Username">
+                        <input type="email" placeholder="Email">
+                        <input type="password" placeholder="Change Password">
+                        <input type="file" accept="image/*" onchange="previewAvatar(event)">
+                    </div>
+                </section>
+
+                <section class="settings-section" id="personalization">
+                    <h2>Personalization</h2>
+                    <div class="content">
+                        <label><input type="checkbox"> Show motivational quotes at start</label>
+                    </div>
+                </section>
+
+                <section class="settings-section" id="notifications">
+                    <h2>Notifications</h2>
+                    <div class="content">
+                        <label><input type="checkbox"> Mood reminder notifications</label>
+                        <label><input type="time"></label>
+                        <label><input type="checkbox"> Relationship mood change alerts</label>
+                    </div>
+                </section>
+
+                <section class="settings-section" id="privacy">
+                    <h2>Privacy & Relationships</h2>
+                    <div class="content">
+                        <button>Manage invitations</button>
+                        <button>Block/Unblock users</button>
+                        <label><input type="checkbox"> Be visible to others</label>
+                        <button>Manage calendar visibility</button>
+                    </div>
+                </section>
+
+                <section class="settings-section" id="aboutApp">
+                    <h2>About App</h2>
+                    <div class="content">
+                        <p>Mood Board App v1.0</p>
+                        <p>Created by Your Team</p>
+                        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
+                    </div>
+                </section>
+
+                <section class="settings-section" id="helpSupport">
+                    <h2>Help & Support</h2>
+                    <div class="content">
+                        <a href="#">FAQ</a> | <a href="#">Contact Support</a> | <a href="#">User Guide</a>
+                    </div>
+                </section>
+
+                <div class="save-button">
+                    <button>Save Changes</button>
+                    <button>Reset to Defaults</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

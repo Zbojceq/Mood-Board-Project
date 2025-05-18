@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Screen</title>
+    <link rel="stylesheet" href="register.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+<body>
+    <div class="register-container">
+        <!-- Nowy rząd z animacjami + tytułem -->
+        <div class="header-row">
+            <lottie-player src="https://lottie.host/da592f6a-17f2-4ab4-a76e-623dbbad4f71/6FRchh4Uwe.json"
+                           background="transparent" speed="1" style="width: 100px; height: 100px;" loop autoplay>
+            </lottie-player>
+
+            <h2>Create Account</h2>
+
+            <lottie-player src="https://lottie.host/8d5f00a4-ec94-4dde-837a-d1a9f7ab2aee/IAInKXMzE6.json"
+                           background="transparent" speed="1" style="width: 100px; height: 100px;" loop autoplay>
+            </lottie-player>
+        </div>
+
+        <form id="registerForm">
+            <input type="text" placeholder="Username" required>
+            <input type="email" placeholder="Email" required>
+            <input type="password" placeholder="Password" required>
+            <input type="password" placeholder="Confirm Password" required>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script src="register.js"></script>
+</body>
+</html>
