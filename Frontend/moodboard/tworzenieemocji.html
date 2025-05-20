@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dodaj Emocję</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #9b59b6;
+      --secondary: #f39c12;
+      --accent: #2ecc71;
+      --bg: #fdf0ff;
+      --text: #2c3e50;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #fce3ff, #d0faff);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, #9b59b6, #6c5ce7);
+      width: 70px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      box-shadow: 3px 0 15px rgba(0,0,0,0.1);
+    }
+
+    .sidebar i {
+      color: white;
+      font-size: 1.5rem;
+      margin: 1.2rem 0;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar i:hover {
+      transform: scale(1.3);
+    }
+
+    .container {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #ffe0f0, #e0f7ff);
+      border-radius: 24px;
+      padding: 3rem;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      width: 100%;
+      animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--text);
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      background: linear-gradient(to right, #8e44ad, #f39c12);
+      background-clip: text;
+      color: transparent;
+    }
+
+    .form-group {
+      margin-bottom: 1.8rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: #6a1b9a;
+    }
+
+    .form-group input[type="text"],
+    .form-group select {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 12px;
+      border: 2px solid #ccc;
+      font-size: 1rem;
+      background: #fff;
+      transition: border 0.3s;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group select:focus {
+      border-color: #8e44ad;
+      outline: none;
+    }
+
+    .form-group input[type="color"] {
+      width: 80px;
+      height: 45px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .emoji-select {
+      font-size: 1.5rem;
+    }
+
+    .submit-btn {
+      background: linear-gradient(to right, #8e44ad, #f39c12);
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 18px;
+      cursor: pointer;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: skewX(-45deg);
+      transition: all 0.5s ease;
+    }
+
+    .submit-btn:hover::before {
+      left: 200%;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(to right, #9b59b6, #e67e22);
+    }
+
+    .preview {
+      margin-top: 1.5rem;
+      text-align: center;
+      animation: fadeIn 0.8s ease-in;
+    }
+
+    .preview span {
+      font-size: 2.3rem;
+      display: inline-block;
+      padding: 0.5rem 1.2rem;
+      border-radius: 1rem;
+      background: #fff;
+      border: 2px dashed #ccc;
+      transition: all 0.4s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .preview span:hover {
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        padding: 2rem 1.5rem;
+      }
+
+      .submit-btn {
+        font-size: 0.9rem;
+        padding: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <i class="fas fa-home" title="Strona główna"></i>
+    <i class="fas fa-calendar" title="Kalendarz"></i>
+    <i class="fas fa-face-smile" title="Emocje"></i>
+    <i class="fas fa-gear" title="Ustawienia"></i>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>Stwórz Własną Emocję</h2>
+
+      <form oninput="updatePreview()">
+        <div class="form-group">
+          <label for="emotionName">Nazwa emocji</label>
+          <input type="text" id="emotionName" placeholder="Np. Zmotywowany" required />
+        </div>
+
+        <div class="form-group">
+          <label for="emojiIcon">Wybierz emotkę</label>
+          <select id="emojiIcon" class="emoji-select">
+            <option value="😊">😊 Uśmiech</option>
+            <option value="😢">😢 Smutek</option>
+            <option value="😠">😠 Złość</option>
+            <option value="😮">😮 Zaskoczenie</option>
+            <option value="😴">😴 Zmęczenie</option>
+            <option value="🤩">🤩 Ekscytacja</option>
+            <option value="😎">😎 Spokój</option>
+            <option value="💡">💡 Pomysłowość</option>
+            <option value="🔥">🔥 Motywacja</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="colorPick">Wybierz kolor</label>
+          <input type="color" id="colorPick" value="#ff69b4" />
+        </div>
+
+        <div class="preview">
+          <label>Podgląd:</label>
+          <br />
+          <span id="previewBadge">😊 Zmotywowany</span>
+        </div>
+
+        <br />
+        <button type="submit" class="submit-btn">Zapisz emocję</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function updatePreview() {
+      const name = document.getElementById("emotionName").value || "Twoja Emocja";
+      const emoji = document.getElementById("emojiIcon").value;
+      const color = document.getElementById("colorPick").value;
+      const preview = document.getElementById("previewBadge");
+      preview.textContent = `${emoji} ${name}`;
+      preview.style.backgroundColor = color;
+    }
+    window.onload = updatePreview;
+  </script>
+</body>
+</html>

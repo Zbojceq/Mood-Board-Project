@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statystyki Nastroju</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #dbeafe, #f3e8ff);
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      border-radius: 25px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      width: 100%;
+      max-width: 480px;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-size: 26px;
+      margin-bottom: 25px;
+      color: #4f46e5;
+      text-align: center;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .mood-summary {
+      font-size: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #374151;
+    }
+
+    .most-frequent {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .mood-chip {
+      padding: 8px 14px;
+      background: linear-gradient(to right, #a5b4fc, #c4b5fd);
+      border-radius: 999px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .mood-chip:hover {
+      transform: scale(1.05);
+    }
+
+    .bar-chart {
+      margin-top: 18px;
+    }
+
+    .bar {
+      background-color: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      height: 18px;
+      margin: 10px 0;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(to right, #6366f1, #8b5cf6);
+      text-align: right;
+      color: white;
+      font-size: 13px;
+      line-height: 18px;
+      padding-right: 8px;
+    }
+
+    .factor-list {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 15px;
+      color: #444;
+    }
+
+    .factor-list div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      background: #f3f4f6;
+      border-radius: 12px;
+    }
+
+    .calendar-button {
+      margin-top: 30px;
+      background: linear-gradient(to right, #6366f1, #8b5cf6);
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .calendar-button:hover {
+      background: linear-gradient(to right, #4f46e5, #7c3aed);
+      transform: scale(1.03);
+    }
+
+    @media (max-width: 500px) {
+      .mood-summary, .mood-chip {
+        font-size: 16px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><i class="fa-solid fa-face-smile"></i> Statystyki Nastroju</h2>
+
+    <div class="section">
+      <div class="mood-summary">
+        <i class="fa-solid fa-gauge-high" style="color:#6366f1;"></i>
+        Średnie samopoczucie: 😊
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="mood-summary">
+        <i class="fa-solid fa-face-laugh-beam" style="color:#10b981;"></i>
+        Najczęstsze nastroje:
+      </div>
+      <div class="most-frequent">
+        <div class="mood-chip">😊 Szczęśliwy</div>
+        <div class="mood-chip">😌 Spokojny</div>
+        <div class="mood-chip">😕 Mieszany</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="mood-summary">
+        <i class="fa-solid fa-chart-bar" style="color:#f59e0b;"></i>
+        Tygodniowy wykres nastrojów
+      </div>
+      <div class="bar-chart">
+        <div class="bar"><div class="bar-fill" style="width: 80%;">Pon</div></div>
+        <div class="bar"><div class="bar-fill" style="width: 65%;">Wt</div></div>
+        <div class="bar"><div class="bar-fill" style="width: 70%;">Śr</div></div>
+        <div class="bar"><div class="bar-fill" style="width: 50%;">Czw</div></div>
+        <div class="bar"><div class="bar-fill" style="width: 90%;">Pt</div></div>
+        <div class="bar"><div class="bar-fill" style="width: 60%;">Sob</div></div>
+        <div class="bar"><div class="bar-fill" style="width: 75%;">Ndz</div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="mood-summary">
+        <i class="fa-solid fa-seedling" style="color:#22c55e;"></i>
+        Czynniki wpływające:
+      </div>
+      <div class="factor-list">
+        <div>🧘 Medytacja</div>
+        <div>🚶 Spacer</div>
+        <div>📖 Czytanie</div>
+        <div>📱 Media społecznościowe</div>
+      </div>
+    </div>
+
+    <button class="calendar-button" id="calendarButton">
+      <i class="fa-solid fa-arrow-left"></i> Powrót do kalendarza
+    </button>
+  </div>
+
+  <script>
+    document.getElementById('calendarButton').addEventListener('click', function () {
+      alert('Przejście do kalendarza!');
+    });
+  </script>
+</body>
+</html>
