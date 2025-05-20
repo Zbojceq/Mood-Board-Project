@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kolorowy Dziennik</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      max-width: 900px;
+      width: 100%;
+      background: #fffdf7;
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      flex-direction: row;
+    }
+
+    .sidebar {
+      width: 70px;
+      background: linear-gradient(to bottom, #a18cd1, #fbc2eb);
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      padding: 20px 0;
+    }
+
+    .home-icon {
+      font-size: 28px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .entry-form {
+      flex: 1;
+      padding: 40px;
+    }
+
+    .entry-form h1 {
+      font-size: 28px;
+      margin-bottom: 25px;
+      color: #444;
+    }
+
+    .date-input,
+    textarea,
+    .mood-reason input,
+    .image-upload input {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      transition: border-color 0.3s;
+    }
+
+    textarea {
+      height: 120px;
+      resize: none;
+    }
+
+    .mood-section label {
+      font-weight: bold;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .moods {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .mood {
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+      border: 3px solid transparent;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f0f0f0;
+    }
+
+    .mood:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .mood.selected {
+      border-color: #6b21a8;
+      box-shadow: 0 0 0 3px #e9d5ff;
+      background-color: #f3e8ff;
+    }
+
+    .sad { background-color: #c7d2fe; }
+    .unhappy { background-color: #bae6fd; }
+    .neutral { background-color: #bbf7d0; }
+    .happy { background-color: #fde68a; }
+    .angry { background-color: #fecaca; }
+    .furious { background-color: #fda4af; }
+
+    .image-upload img {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 12px;
+    }
+
+    .save-button {
+      background-color: #7c3aed;
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .save-button:hover {
+      background-color: #5b21b6;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        flex-direction: column;
+        border-radius: 12px;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: 60px;
+        justify-content: center;
+      }
+
+      .entry-form {
+        padding: 25px;
+      }
+
+      .moods {
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="home-icon">🏠</div>
+    </aside>
+    <main class="entry-form">
+      <h1>Nowy wpis do dziennika</h1>
+      <input type="date" class="date-input" />
+      <textarea placeholder="Napisz tutaj swój wpis..."></textarea>
+
+      <div class="mood-section">
+        <label>Wybierz swój nastrój</label>
+        <div class="moods">
+          <button class="mood sad">😢</button>
+          <button class="mood unhappy">🙁</button>
+          <button class="mood neutral">😐</button>
+          <button class="mood happy">🙂</button>
+          <button class="mood angry">😠</button>
+          <button class="mood furious">😡</button>
+        </div>
+      </div>
+
+      <div class="mood-reason">
+        <input type="text" placeholder="Dlaczego tak się czujesz?" />
+      </div>
+
+      <div class="image-upload">
+        <input type="file" accept="image/*" id="imageInput" />
+        <img id="previewImage" style="display:none;" />
+      </div>
+
+      <button class="save-button">💾 Zapisz wpis</button>
+    </main>
+  </div>
+
+  <script>
+    const moodButtons = document.querySelectorAll('.mood');
+    moodButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        moodButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
+
+    const imageInput = document.getElementById('imageInput');
+    const previewImage = document.getElementById('previewImage');
+
+    imageInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          previewImage.src = e.target.result;
+          previewImage.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewImage.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
