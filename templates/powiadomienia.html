@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Powiadomienia</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f0f4ff, #e4f5ff);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      background: linear-gradient(180deg, #5c4ee5, #8f6aff);
+      width: 80px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar i {
+      color: white;
+      font-size: 1.7rem;
+      margin: 1.5rem 0;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .sidebar i:hover {
+      transform: scale(1.2);
+    }
+
+    .container {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      background: white;
+      border-radius: 24px;
+      padding: 3rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      max-width: 1000px;
+      width: 100%;
+      animation: fadeIn 1s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 2rem;
+      background: linear-gradient(90deg, #5c4ee5, #8f6aff);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.5rem;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1rem 0;
+    }
+
+    .toggle label {
+      font-size: 1.2rem;
+      color: #444;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 30px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      border-radius: 34px;
+      transition: 0.4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 24px;
+      width: 24px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.4s;
+    }
+
+    .switch input:checked + .slider {
+      background: linear-gradient(90deg, #6c63ff, #8a7fff);
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(30px);
+    }
+
+    .reminder-time {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .time-box {
+      background-color: #f0f3ff;
+      padding: 1.2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      animation: fadeInBox 0.5s ease forwards;
+      opacity: 0;
+    }
+
+    .time-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    }
+
+    @keyframes fadeInBox {
+      to {opacity: 1;}
+    }
+
+    .time-box h4 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.1rem;
+      color: #555;
+    }
+
+    input[type="time"] {
+      padding: 0.5rem;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .morning { background-color: #e0f7fa; }
+    .afternoon { background-color: #fff3e0; }
+    .evening { background-color: #ede7f6; }
+    .night { background-color: #fce4ec; }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+      background: linear-gradient(135deg, #6c63ff, #8f6aff);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .btn.add::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 50%;
+      height: 100%;
+      background: rgba(255,255,255,0.3);
+      transform: skewX(-20deg);
+      transition: 0.5s;
+    }
+
+    .btn.add:hover::after {
+      left: 130%;
+    }
+
+    @media (max-width: 768px) {
+      .reminder-time {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .reminder-time {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <i class="fas fa-home"></i>
+    <i class="fas fa-calendar-alt"></i>
+    <i class="fas fa-bell"></i>
+    <i class="fas fa-cog"></i>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>Ustawienia Powiadomień</h2>
+
+      <div class="toggle">
+        <label for="toggleReminder">Włącz przypomnienia</label>
+        <label class="switch">
+          <input type="checkbox" id="toggleReminder" checked />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="reminder-time">
+        <div class="time-box morning">
+          <h4>Rano</h4>
+          <input type="time" value="08:00">
+        </div>
+        <div class="time-box afternoon">
+          <h4>Popołudnie</h4>
+          <input type="time" value="13:00">
+        </div>
+        <div class="time-box evening">
+          <h4>Wieczór</h4>
+          <input type="time" value="18:30">
+        </div>
+        <div class="time-box night">
+          <h4>Noc</h4>
+          <input type="time" value="22:00">
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button class="btn add"><i class="fas fa-plus"></i> Dodaj</button>
+        <button class="btn"><i class="fas fa-eye"></i> Podgląd</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const toggle = document.getElementById('toggleReminder');
+    const timeInputs = document.querySelectorAll('.reminder-time input[type="time"]');
+
+    function updateTimeInputsState() {
+      const enabled = toggle.checked;
+      timeInputs.forEach(input => {
+        input.disabled = !enabled;
+      });
+      console.log(`Przypomnienia są ${enabled ? 'włączone' : 'wyłączone'}.`);
+    }
+    updateTimeInputsState();
+    toggle.addEventListener('change', updateTimeInputsState);
+  </script>
+</body>
+</html>

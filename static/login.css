@@ -1,0 +1,199 @@
+@keyframes backgroundBlur {
+    0% { filter: blur(8px) brightness(0.7); }
+    100% { filter: blur(0px) brightness(1); }
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('emoji_image_blur.png') no-repeat center center fixed;
+    background-size: cover;
+    z-index: -1;
+    /*filter: blur(200px);*/
+    animation: backgroundBlur 2s ease-out forwards;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(90, 79, 207, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(90, 79, 207, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(90, 79, 207, 0); }
+}
+
+.login-container {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 90%;
+    max-width: 320px;
+    animation: fadeSlide 1s ease;
+    box-sizing: border-box;
+}
+
+.login-container h2 {
+    animation: fadeSlide 0.8s ease forwards;
+    animation-delay: 0.5s;
+    opacity: 0;
+}
+
+.login-container input, .login-container button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.login-container input:nth-of-type(1) {
+    animation: fadeSlide 0.8s ease forwards;
+    animation-delay: 0.7s;
+    opacity: 0;
+}
+
+.login-container input:nth-of-type(2) {
+    animation: fadeSlide 0.8s ease forwards;
+    animation-delay: 0.9s;
+    opacity: 0;
+}
+
+.login-container button[type="submit"] {
+    animation: fadeSlide 0.8s ease forwards;
+    animation-delay: 1.1s;
+    opacity: 0;
+}
+
+.options {
+    animation: fadeSlide 0.8s ease forwards;
+    animation-delay: 1.3s;
+    opacity: 0;
+}
+
+#goToApp {
+    animation: fadeSlide 0.8s ease forwards, pulse 2s infinite;
+    animation-delay: 1.5s;
+    opacity: 0;
+}
+
+.login-container button {
+    background-color: #5a4fcf;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+.login-container button:hover {
+    background-color: #4839b4;
+}
+
+.login-container button:active {
+    transform: scale(0.95);
+}
+
+.options a {
+    color: #5a4fcf;
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: color 0.3s ease;
+}
+
+.options a:hover {
+    text-decoration: underline;
+    color: #4839b4;
+}
+
+@media (max-width: 400px) {
+    .login-container {
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .login-container h2 { font-size: 1.2em; }
+    .login-container input, .login-container button {
+        padding: 10px;
+        font-size: 0.9em;
+    }
+    .options a { font-size: 0.8em; }
+}
+/* ----------------- */
+/* Modal Password Reset */
+/* ----------------- */
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
+    max-width: 300px;
+    width: 90%;
+    animation: fadeSlide 0.5s ease;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.modal-content button {
+    width: 100%;
+    padding: 10px;
+    background-color: #5a4fcf;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content button:hover {
+    background-color: #4839b4;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}

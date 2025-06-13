@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Avatar</title>
+    <link rel="stylesheet" href="static/avatar.css">
+</head>
+<body>
+
+    <header>
+        <h1>Create Your Avatar</h1>
+    </header>
+
+    <div class="avatar-container">
+        <div class="controls">
+            <div class="color-picker">
+                <label for="headColor">Head Color:</label>
+                <input type="color" id="headColor" value="#fbbf24" onchange="changeColor('head', this.value)">
+            </div>
+            <div class="color-picker">
+                <label for="eyesColor">Eyes Color:</label>
+                <input type="color" id="eyesColor" value="#000000" onchange="changeColor('eyes', this.value)">
+            </div>
+            <div class="color-picker">
+                <label for="mouthColor">Mouth Color:</label>
+                <input type="color" id="mouthColor" value="#e11d48" onchange="changeColor('mouth', this.value)">
+            </div>
+            <div class="buttons">
+                <button onclick="clearCanvas()">Clear</button>
+                <button onclick="saveAvatar()">Save Avatar</button>
+            </div>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="avatarCanvas" width="400" height="400"></canvas>
+        </div>
+    </div>
+
+    <script src="avatar.js"></script>
+</body>
+</html>

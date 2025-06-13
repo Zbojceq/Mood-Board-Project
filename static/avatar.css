@@ -1,0 +1,107 @@
+/* Style for the Avatar Creation page */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fc;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    color: #333;
+}
+
+header {
+    text-align: center;
+    background-color: #5a4fcf;
+    color: white;
+    padding: 20px;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    font-size: 2.5em;
+    margin: 0;
+}
+
+.avatar-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    max-width: 1000px;
+    padding: 40px;
+    gap: 30px;
+}
+
+.controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.color-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.controls button {
+    padding: 10px;
+    background-color: #5a4fcf;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.controls button:hover {
+    background-color: #4839b4;
+    transform: scale(1.05);
+}
+
+.controls button:active {
+    transform: scale(0.98);
+}
+
+.canvas-container {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+canvas {
+    border: 2px solid #5a4fcf;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .avatar-container {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .canvas-container {
+        width: 100%;
+    }
+
+    .controls {
+        width: 100%;
+        max-width: 500px;
+    }
+}
