@@ -1,3 +1,7 @@
+{% extends 'side_menu.html' %}
+
+{% block main %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,9 +13,7 @@
     <script src="static/settings.js" defer></script>
 </head>
 <body>
-    <header>
-        <h1>MoodBoard Settings</h1>
-    </header>
+
 
     <div class="container">
         <div class="content">
@@ -49,11 +51,6 @@
 
                 <section class="settings-section" id="notifications">
                     <h2>Notifications</h2>
-                    <div class="content">
-                        <label><input type="checkbox"> Mood reminder notifications</label>
-                        <label><input type="time"></label>
-                        <label><input type="checkbox"> Relationship mood change alerts</label>
-                    </div>
                 </section>
 
                 <section class="settings-section" id="privacy">
@@ -70,7 +67,7 @@
                     <h2>About App</h2>
                     <div class="content">
                         <p>Mood Board App v1.0</p>
-                        <p>Created by Your Team</p>
+                        <p>Created by Clockwork</p>
                         <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
                     </div>
                 </section>
@@ -91,3 +88,5 @@
     </div>
 </body>
 </html>
+{% endblock %}
+

@@ -1,9 +1,12 @@
+{% extends 'side_menu.html' %}
+
+{% block main %}
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Powiadomienia</title>
+  <title>Notifs</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
@@ -75,15 +78,19 @@
     }
 
     .toggle {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      justify-items: center;
       align-items: center;
-      justify-content: space-between;
       margin: 1rem 0;
     }
 
     .toggle label {
-      font-size: 1.2rem;
-      color: #444;
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 0;
     }
 
     .switch {
@@ -130,6 +137,7 @@
     .switch input:checked + .slider:before {
       transform: translateX(30px);
     }
+
 
     .reminder-time {
       display: grid;
@@ -230,64 +238,88 @@
   </style>
 </head>
 <body>
+  <!--
   <div class="sidebar">
     <i class="fas fa-home"></i>
     <i class="fas fa-calendar-alt"></i>
     <i class="fas fa-bell"></i>
     <i class="fas fa-cog"></i>
   </div>
+  -->
+
 
   <div class="container">
     <div class="card">
-      <h2>Ustawienia Powiadomień</h2>
+      <h2>Notification Settings</h2>
 
-      <div class="toggle">
-        <label for="toggleReminder">Włącz przypomnienia</label>
-        <label class="switch">
-          <input type="checkbox" id="toggleReminder" checked />
-          <span class="slider"></span>
-        </label>
-      </div>
+
 
       <div class="reminder-time">
         <div class="time-box morning">
-          <h4>Rano</h4>
-          <input type="time" value="08:00">
+          <h4>Morning</h4>
+          <input type="time" id="reminderTimeMorning" value="08:00">
         </div>
         <div class="time-box afternoon">
-          <h4>Popołudnie</h4>
-          <input type="time" value="13:00">
+          <h4>Afternoon</h4>
+          <input type="time" id="reminderTimeAfter" value="13:00">
         </div>
         <div class="time-box evening">
-          <h4>Wieczór</h4>
-          <input type="time" value="18:30">
+          <h4>Evening</h4>
+          <input type="time" id="reminderTimeEvening" value="18:30">
         </div>
         <div class="time-box night">
-          <h4>Noc</h4>
-          <input type="time" value="22:00">
+          <h4>Night</h4>
+          <input type="time" id="reminderTimeNight" value="22:00">
         </div>
       </div>
 
+
+      <div class="toggle">
+        <label class="switch" style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
+            <input type="checkbox" id="toggleReminderMorning" checked />
+            <span class="slider"></span>
+        </label>
+        <label class="switch" style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
+            <input type="checkbox" id="toggleReminderAfter" checked />
+            <span class="slider"></span>
+        </label>
+        <label class="switch" style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
+            <input type="checkbox" id="toggleReminderEvening" checked />
+            <span class="slider"></span>
+        </label>
+        <label class="switch" style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
+            <input type="checkbox" id="toggleReminderNight" checked />
+            <span class="slider"></span>
+        </label>
+      </div>
+
+
       <div class="buttons">
-        <button class="btn add"><i class="fas fa-plus"></i> Dodaj</button>
-        <button class="btn"><i class="fas fa-eye"></i> Podgląd</button>
+        <button class="btn add"><i class="fas fa-plus"></i> Add</button>
+        <button class="btn"><i class="fas fa-eye"></i> View</button>
       </div>
     </div>
   </div>
 
   <script>
-    const toggle = document.getElementById('toggleReminder');
-    const timeInputs = document.querySelectorAll('.reminder-time input[type="time"]');
+    const timeBoxes = [
+      { toggleId: 'toggleReminderMorning', inputId: 'reminderTimeMorning' },
+      { toggleId: 'toggleReminderAfter', inputId: 'reminderTimeAfter' },
+      { toggleId: 'toggleReminderEvening', inputId: 'reminderTimeEvening' },
+      { toggleId: 'toggleReminderNight', inputId: 'reminderTimeNight' }
+    ];
 
-    function updateTimeInputsState() {
-      const enabled = toggle.checked;
-      timeInputs.forEach(input => {
-        input.disabled = !enabled;
-      });
-      console.log(`Przypomnienia są ${enabled ? 'włączone' : 'wyłączone'}.`);
-    }
-    updateTimeInputsState();
-    toggle.addEventListener('change', updateTimeInputsState);
+    timeBoxes.forEach(box => {
+      const toggle = document.getElementById(box.toggleId);
+      const input = document.getElementById(box.inputId);
+      function updateState() {
+        input.disabled = !toggle.checked;
+      }
+      updateState();
+      toggle.addEventListener('change', updateState);
+    });
   </script>
 </body>
 </html>
+{% endblock %}
+

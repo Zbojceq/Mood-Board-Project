@@ -1,4 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+#from forms import LoginForm, RegisterForm
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -61,3 +64,7 @@ def notifs():
 @app.route('/emotion_add')
 def emotion_add():
     return render_template('emotion_add.html')
+
+@app.route('/settings')
+def settings():
+    return render_template('settings.html')
