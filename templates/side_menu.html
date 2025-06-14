@@ -12,7 +12,7 @@
       display: flex;
     }
 
-    .sidebar {
+    .sidebar_special {
       background: linear-gradient(180deg, #5c4ee5, #8f6aff);
       width: 80px;
       height: 100vh;
@@ -26,7 +26,7 @@
       z-index: 1000;
     }
 
-    .sidebar i {
+    .sidebar_special i {
       color: white;
       font-size: 1.5rem;
       margin: 1.5rem 0;
@@ -34,7 +34,7 @@
       transition: transform 0.2s;
     }
 
-    .sidebar i:hover {
+    .sidebar_special i:hover {
       transform: scale(1.2);
     }
 
@@ -51,42 +51,58 @@
       white-space: nowrap;
     }
 
-    .icon-container {
+    .icon-container_special {
       position: relative;
     }
 
-    .icon-container:hover .tooltip {
+    .icon-container_special:hover .tooltip {
       display: block;
     }
+
+    .icon-button_special {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      outline: none;
+      margin: 0.5rem 0;
+    }
+
+    .icon-button:focus .sidebar i,
+    .icon-button:hover .sidebar i {
+      transform: scale(1.2);
+    }
+
+
 
 </style>
 </head>
 <body>
-  <div class="sidebar">
-    <div class="icon-container">
-      <i class="fas fa-home"></i>
-      <div class="tooltip">Calendar</div>
-    </div>
-    <div class="icon-container">
+  <div class="sidebar_special">
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/main'">
       <i class="fas fa-calendar"></i>
       <div class="tooltip">Calendar</div>
-    </div>
-    <div class="icon-container">
+    </button>
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/stats'">
       <i class="fas fa-chart-line"></i>
       <div class="tooltip">Stats</div>
-    </div>
-    <div class="icon-container">
+    </button>
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/notifs'">
       <i class="fas fa-bell"></i>
       <div class="tooltip">Notifications</div>
-    </div>
-    <div class="icon-container">
+    </button>
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/settings'">
       <i class="fas fa-cog"></i>
       <div class="tooltip">Settings</div>
-    </div>
-    <div class="icon-container">
+    </button>
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/logout'">
       <i class="fas fa-sign-out-alt"></i>
       <div class="tooltip">Log out</div>
-    </div>
+    </button>
   </div>
 
   {% block main %}{% endblock %}
