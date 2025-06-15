@@ -68,3 +68,6 @@ def emotion_add():
 @app.route('/settings')
 def settings():
     return render_template('settings.html')
+@app.route('/daily')
+def daily():
+    return render_template('main1.html')
