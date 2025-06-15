@@ -16,7 +16,7 @@ login_manager = LoginManager() #implementuje moduł logowania
 login_manager.init_app(app)
 login_manager.login_view = 'login_temp'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Czas trwania sesji
-csrf = CSRFProtect(app)  # Inicjalizacja CSRF Protect
+#csrf = CSRFProtect(app)  # Inicjalizacja CSRF Protect
 
 
 @login_manager.user_loader
