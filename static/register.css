@@ -45,8 +45,8 @@ body, html {
 }
 .register-container input {
     width: 100%;
-    padding: 15px;
-    margin: 10px 0;
+    padding: 10px;
+    margin: 4px 0 2px 0; /* less space above and below */
     border: 1px solid #ccc;
     border-radius: 10px;
     box-sizing: border-box;
@@ -68,6 +68,12 @@ body, html {
 }
 .register-container button:active {
     transform: scale(0.95);
+}
+
+.register-container button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    animation: none;
 }
 @media (max-width: 500px) {
     .register-container {
@@ -92,4 +98,21 @@ body, html {
     margin: 0;
     font-size: 1.8em;
     color: #5a4fcf;
+}
+
+#registerForm p {
+    margin-bottom: 6px;
+    margin-top: 6px;
+}
+
+#registerForm input {
+    margin-bottom: 4px; /* or less */
+}
+
+#registerForm .error {
+    display: block;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    color: red;
+    font-size: 0.95em;
 }

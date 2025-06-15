@@ -1,11 +1,3 @@
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    alert('Login button clicked.\nUsername: ' + document.getElementById('username').value);
-});
-
-document.getElementById('register').addEventListener('click', function() {
-    alert('Redirect to Registration Page');
-});
 
 document.getElementById('forgot').addEventListener('click', function() {
     alert('Redirect to Password Recovery');

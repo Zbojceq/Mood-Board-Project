@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from forms import LoginForm, RegisterForm
@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy(app)
 login_manager = LoginManager() #implementuje moduł logowania 
 login_manager.init_app(app)
-login_manager.login_view = 'login_temp'
+login_manager.login_view = 'login'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Czas trwania sesji
 #csrf = CSRFProtect(app)  # Inicjalizacja CSRF Protect
 
@@ -23,43 +23,58 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Czas trwania
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all() 
-    app.run(debug=True)
-
-class User(UserMixin, db.Model):
+class User(UserMixin, db.Model):    
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
 
-@app.route('/login_temp', methods=['GET', 'POST'])
-def login_temp():
+with app.app_context():
+    db.create_all() 
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             return redirect(url_for('dashboard'))
-        flash('Invalid username or password')
-    return render_template('login_temp.html', form=form)
+        flash('Invalid username or password')       
+    return render_template('login.html', form=form)
 
-@app.route('/register_temp', methods=['GET', 'POST'])
-def register_temp():
+@app.route('/register', methods=['GET', 'POST'])
+def register():
     form = RegisterForm()
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data, method='pbkdf2')
-        new_user = User(username=form.username.data, password=hashed_password)
+        new_user = User(username=form.username.data, password=hashed_password, email=form.email.data)
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('login_temp'))
-    return render_template('register_temp.html', form=form)
+        return redirect(url_for('login'))
+    return render_template('register.html', form=form)
+
+@app.route('/check_username', methods=['POST'])
+def check_username():
+    username = request.json.get('username')
+    exists = User.query.filter_by(username=username).first() is not None
+    return jsonify({'exists': exists})
+
+@app.route('/check_email', methods=['POST'])
+def check_email():
+    email = request.json.get('email')
+    exists = User.query.filter_by(email=email).first() is not None
+    return jsonify({'exists': exists})
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login_temp'))
+    return redirect(url_for('login'))
 
 @app.route('/dashboard')
 @login_required
@@ -68,6 +83,7 @@ def dashboard():
 
 
 @app.route('/')
+@login_required
 def hello_world():
     return 'Hello, World!'
 
@@ -75,13 +91,6 @@ def hello_world():
 def start():
     return render_template('start.html')
 
-@app.route('/register')
-def register():
-    return render_template('register.html') 
-
-@app.route('/login')
-def login():
-    return render_template('login.html') 
 
 @app.route('/quotes')
 def quotes():
@@ -104,6 +113,7 @@ def avatar():
     return render_template('avatar.html')  
 
 @app.route('/stats')
+@login_required
 def stats():
     return render_template('stats.html')
 
@@ -112,6 +122,7 @@ def emotion_create():
     return render_template('emotion_create.html')
 
 @app.route('/main')
+@login_required
 def main():
     return render_template('main.html')
 
@@ -121,6 +132,7 @@ def side_menu():
     return render_template('side_menu.html')
 
 @app.route('/notifs')
+@login_required
 def notifs():
     return render_template('notifs.html')
 
@@ -129,5 +141,6 @@ def emotion_add():
     return render_template('emotion_add.html')
 
 @app.route('/settings')
+@login_required
 def settings():
     return render_template('settings.html')
