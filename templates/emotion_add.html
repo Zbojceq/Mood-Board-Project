@@ -15,7 +15,6 @@
     }
 
     body {
-      background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -166,6 +165,12 @@
         flex-wrap: wrap;
         gap: 10px;
       }
+
+      .p {
+        text-align: left;
+        grid-auto-flow: row;
+      }
+
     }
   </style>
 </head>
@@ -175,12 +180,12 @@
       <div class="home-icon">🏠</div>
     </aside>
     <main class="entry-form">
-      <h1>Nowy wpis do dziennika</h1>
+      <h1>New mood log</h1>
       <input type="date" class="date-input" />
-      <textarea placeholder="Napisz tutaj swój wpis..."></textarea>
+      <textarea placeholder="Write your log here..."></textarea>
 
       <div class="mood-section">
-        <label>Wybierz swój nastrój</label>
+        <label>Choose your mood</label>
         <div class="moods">
           <button class="mood sad">😢</button>
           <button class="mood unhappy">🙁</button>
@@ -192,7 +197,7 @@
       </div>
 
       <div class="mood-reason">
-        <input type="text" placeholder="Dlaczego tak się czujesz?" />
+        <input type="text" placeholder="Why are you felling that way?" />
       </div>
 
       <div class="image-upload">
@@ -200,7 +205,10 @@
         <img id="previewImage" style="display:none;" />
       </div>
 
-      <button class="save-button">💾 Zapisz wpis</button>
+      <p>
+      <button id="return" class="save-button" onclick="NoAddMoodLog()">Return</button>
+      <button class="save-button">💾 Save Log</button>
+      </p>
     </main>
   </div>
 

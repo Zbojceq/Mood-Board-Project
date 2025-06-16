@@ -1,11 +1,11 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from forms import LoginForm, RegisterForm
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 from flask_wtf.csrf import CSRFProtect
-
+from datetime import datetime
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -29,6 +29,15 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
+    calendar_logs = db.relationship('CalendarLog', backref='user', lazy=True)
+
+class CalendarLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    event_date = db.Column(db.Date, nullable=False)
+    event_time = db.Column(db.Time, nullable=True)
+    description = db.Column(db.String(255), nullable=False)
+
 
 with app.app_context():
     db.create_all() 
@@ -70,6 +79,22 @@ def check_email():
     exists = User.query.filter_by(email=email).first() is not None
     return jsonify({'exists': exists})
 
+@app.route('/add_test')
+@login_required
+def add_test():
+    date_str = '16.05.2023'
+    date = datetime.strptime(date_str, '%d.%m.%Y').date()
+    time_str = '10:00'
+    time = datetime.strptime(time_str, '%H:%M').time()
+    new_log = CalendarLog(
+        user_id=current_user.id, 
+        event_date=date, 
+        event_time=time, 
+        description="Meeting with team")
+    db.session.add(new_log)
+    db.session.commit()
+    return 'Test added!'
+
 @app.route('/logout')
 @login_required
 def logout():
@@ -79,7 +104,7 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return f'Hello, {current_user.username}!'
+    return f'Hello, {current_user.username}!, {current_user.calendar_logs[0].event_date} {current_user.calendar_logs[0].event_time} {current_user.calendar_logs[0].description}'
 
 
 @app.route('/')
@@ -125,6 +150,11 @@ def emotion_create():
 @login_required
 def main():
     return render_template('main.html')
+
+@app.route('/daily')
+@login_required
+def daily():
+    return render_template('daily.html')
 
 
 @app.route('/side_menu')

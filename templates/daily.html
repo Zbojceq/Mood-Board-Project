@@ -1,0 +1,191 @@
+{% extends 'side_menu.html' %}
+
+{% block main %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MoodBoard - Widok Dzienny</title>
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --bg: #f0f4f8;
+      --white: #ffffff;
+      --text: #1f2937;
+      --accent-yellow: #fde047;
+      --accent-green: #4ade80;
+      --accent-orange: #fb923c;
+      --accent-blue: #60a5fa;
+      --gray: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f0f4f8, #e0e7ff);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+      margin-left: 80px;
+    }
+
+    .main {
+      flex: 1;
+      padding: 30px 40px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 25px;
+    }
+
+    .top-bar h1 {
+      font-size: 32px;
+      background: linear-gradient(90deg, #6366f1, #9333ea);
+      color: transparent;
+      background-clip: text;
+      -webkit-background-clip: text;
+      font-weight: bold;
+    }
+
+    .view-switch {
+      display: flex;
+      gap: 12px;
+    }
+
+    .view-switch button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #a5b4fc, #c4b5fd);
+      color: #1f2937;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: transform 0.2s;
+    }
+
+    .view-switch button:hover {
+      transform: scale(1.05);
+    }
+
+    .selected-day {
+      font-size: 24px;
+      font-weight: 600;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: var(--primary);
+    }
+
+    .time-slots {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .time-slot {
+      background-color: var(--white);
+      border-radius: 14px;
+      padding: 30px 20px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      height: 160px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .time-slot:hover {
+      background-color: #e0e7ff;
+      transform: scale(1.04);
+    }
+
+    .mood-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+    }
+
+    .happy {
+      background-color: var(--accent-yellow);
+    }
+
+    .calm {
+      background-color: var(--accent-green);
+    }
+
+    .mixed {
+      background-color: var(--accent-orange);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main">
+    <div class="top-bar">
+      <h1>📌 Widok Dzienny</h1>
+      <div class="view-switch">
+        <button onclick="window.location.href='/daily'">Dzienny</button>
+        <button onclick="window.location.href='/main'">Miesięczny/Tygodniowy</button>
+      </div>
+    </div>
+
+    <div class="selected-day" id="selectedDay">15 czerwca 2025</div>
+
+    <div class="time-slots" id="timeSlots"></div>
+  </div>
+
+  <script>
+    const timeSlots = [
+      "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"
+    ];
+
+    const container = document.getElementById('timeSlots');
+
+    timeSlots.forEach(time => {
+      const slot = document.createElement('div');
+      slot.className = 'time-slot';
+      slot.onclick = () => alert(`Szczegóły godziny: ${time}`);
+
+      slot.innerText = time;
+
+      // Przykładowy losowy nastrój
+      if (Math.random() > 0.5) {
+        const mood = ['happy', 'calm', 'mixed'][Math.floor(Math.random() * 3)];
+        const dot = document.createElement('div');
+        dot.className = 'mood-dot ' + mood;
+        slot.appendChild(dot);
+      }
+
+      container.appendChild(slot);
+    });
+
+    // Możesz też dynamicznie ustawić datę wybranego dnia, np. z URL lub z daty systemowej
+  </script>
+</body>
+</html>
+{% endblock %}

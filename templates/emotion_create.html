@@ -1,3 +1,7 @@
+{% extends 'side_menu.html' %}
+
+{% block main %}
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -186,58 +190,52 @@
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <i class="fas fa-home" title="Strona główna"></i>
-    <i class="fas fa-calendar" title="Kalendarz"></i>
-    <i class="fas fa-face-smile" title="Emocje"></i>
-    <i class="fas fa-gear" title="Ustawienia"></i>
-  </div>
 
   <div class="container">
     <div class="card">
-      <h2>Stwórz Własną Emocję</h2>
+      <h2>Create your own Emotion</h2>
 
       <form oninput="updatePreview()">
         <div class="form-group">
-          <label for="emotionName">Nazwa emocji</label>
-          <input type="text" id="emotionName" placeholder="Np. Zmotywowany" required />
+          <label for="emotionName">Emotion Name</label>
+          <input type="text" id="emotionName" placeholder="ex. Motivated" required />
         </div>
 
         <div class="form-group">
-          <label for="emojiIcon">Wybierz emotkę</label>
+          <label for="emojiIcon">Choose emoticon</label>
           <select id="emojiIcon" class="emoji-select">
-            <option value="😊">😊 Uśmiech</option>
-            <option value="😢">😢 Smutek</option>
-            <option value="😠">😠 Złość</option>
-            <option value="😮">😮 Zaskoczenie</option>
-            <option value="😴">😴 Zmęczenie</option>
-            <option value="🤩">🤩 Ekscytacja</option>
-            <option value="😎">😎 Spokój</option>
-            <option value="💡">💡 Pomysłowość</option>
-            <option value="🔥">🔥 Motywacja</option>
+            <option value="😊">😊 Smile</option>
+            <option value="😢">😢 Sad</option>
+            <option value="😠">😠 Angry</option>
+            <option value="😮">😮 Shocked</option>
+            <option value="😴">😴 Tired</option>
+            <option value="🤩">🤩 Excited</option>
+            <option value="😎">😎 Cool</option>
+            <option value="💡">💡 Inspired</option>
+            <option value="🔥">🔥 Motivated</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="colorPick">Wybierz kolor</label>
+          <label for="colorPick">Choose Color</label>
           <input type="color" id="colorPick" value="#ff69b4" />
         </div>
 
         <div class="preview">
-          <label>Podgląd:</label>
+          <label>Preview:</label>
           <br />
-          <span id="previewBadge">😊 Zmotywowany</span>
+          <span id="previewBadge">😊 <Motivated></span>
         </div>
 
         <br />
-        <button type="submit" class="submit-btn">Zapisz emocję</button>
+        <button type="submit" class="submit-btn">Create Emotion</button>
       </form>
     </div>
   </div>
 
   <script>
     function updatePreview() {
-      const name = document.getElementById("emotionName").value || "Twoja Emocja";
+      const name = document.getElementById("emotionName").value || "Your Emotion";
       const emoji = document.getElementById("emojiIcon").value;
       const color = document.getElementById("colorPick").value;
       const preview = document.getElementById("previewBadge");
@@ -248,3 +246,4 @@
   </script>
 </body>
 </html>
+{% endblock %}
