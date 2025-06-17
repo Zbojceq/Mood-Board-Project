@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterForm
+from forms import LoginForm, RegisterForm, EmotionForm
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 from flask_wtf.csrf import CSRFProtect
@@ -30,6 +30,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     calendar_logs = db.relationship('CalendarLog', backref='user', lazy=True)
+    emotions = db.relationship('Emotion', backref='user', lazy=True)
 
 class CalendarLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,6 +38,22 @@ class CalendarLog(db.Model):
     event_date = db.Column(db.Date, nullable=False)
     event_time = db.Column(db.Time, nullable=True)
     description = db.Column(db.String(255), nullable=False)
+    emotion = db.relationship('Emotion', backref='calendar_log', lazy=True)
+
+class CalendarLogDaySummary(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    event_date = db.Column(db.Date, nullable=False)
+
+    description = db.Column(db.String(255), nullable=False)
+
+class Emotion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    emotion_description = db.Column(db.String(255), nullable=False)
+    emotion_emoticon = db.Column(db.String(255), nullable=True)
+    color = db.Column(db.String(255), nullable=False)
+
 
 
 with app.app_context():
@@ -52,7 +69,7 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('main'))
         flash('Invalid username or password')       
     return render_template('login.html', form=form)
 
@@ -104,7 +121,9 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return f'Hello, {current_user.username}!, {current_user.calendar_logs[0].event_date} {current_user.calendar_logs[0].event_time} {current_user.calendar_logs[0].description}'
+    text = f'Hello, {current_user.username}!, {current_user.calendar_logs[0].event_date} {current_user.calendar_logs[0].event_time} {current_user.calendar_logs[0].description}'
+    text2 = f'Hello, {current_user.emotions[0].color} {current_user.emotions[0].emotion_description} {current_user.emotions[0].emotion_emoticon}'
+    return text2
 
 
 @app.route('/')
@@ -142,9 +161,27 @@ def avatar():
 def stats():
     return render_template('stats.html')
 
-@app.route('/emotion_create')
+@app.route('/emotion_create', methods=['GET', 'POST'])
 def emotion_create():
-    return render_template('emotion_create.html')
+    form = EmotionForm()
+    if form.validate_on_submit():
+        description = form.name.data
+        emoticon = form.emoticon.data
+        color = form.color.data
+        
+        new_emotion = Emotion(
+            user_id=current_user.id,
+            emotion_description=description,
+            emotion_emoticon=emoticon,
+            color=color
+        )
+        db.session.add(new_emotion)
+        db.session.commit()
+        flash('Emotion created successfully!', 'success')
+        return redirect(url_for('main'))
+    else:
+        flash('Please fill in all fields.', 'danger')
+    return render_template('emotion_create.html', form=form)
 
 @app.route('/main')
 @login_required
@@ -155,7 +192,6 @@ def main():
 @login_required
 def daily():
     return render_template('daily.html')
-
 
 @app.route('/side_menu')
 def side_menu():
