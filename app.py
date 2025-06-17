@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterForm, EmotionForm
+from forms import LoginForm, RegisterForm, EmotionForm, CalendarLogForm
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 from flask_wtf.csrf import CSRFProtect
@@ -30,22 +30,25 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     calendar_logs = db.relationship('CalendarLog', backref='user', lazy=True)
+    calendar_log_day_summaries = db.relationship('CalendarLogDaySummary', backref='user', lazy=True)
     emotions = db.relationship('Emotion', backref='user', lazy=True)
 
-class CalendarLog(db.Model):
+class CalendarLog(UserMixin, db.Model):
+    __tablename__ = 'calendar_logs'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     event_date = db.Column(db.Date, nullable=False)
     event_time = db.Column(db.Time, nullable=True)
     description = db.Column(db.String(255), nullable=False)
-    emotion = db.relationship('Emotion', backref='calendar_log', lazy=True)
+    emotions_logs = db.relationship('EmotionLog', backref='calendar_log', lazy=True)
 
-class CalendarLogDaySummary(db.Model):
+class CalendarLogDaySummary(UserMixin, db.Model):
+    __tablename__ = 'calendar_log_summaries'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     event_date = db.Column(db.Date, nullable=False)
-
     description = db.Column(db.String(255), nullable=False)
+    emotions_logs = db.relationship('EmotionLogSummary', backref='calendar_log_day_summary', lazy=True)
 
 class Emotion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -54,6 +57,19 @@ class Emotion(db.Model):
     emotion_emoticon = db.Column(db.String(255), nullable=True)
     color = db.Column(db.String(255), nullable=False)
 
+class EmotionLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('calendar_logs.id'), nullable=False)
+    emotion_description = db.Column(db.String(255), nullable=False)
+    emotion_emoticon = db.Column(db.String(255), nullable=True)
+    color = db.Column(db.String(255), nullable=False)
+
+class EmotionLogSummary(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('calendar_log_summaries.id'), nullable=False)
+    emotion_description = db.Column(db.String(255), nullable=False)
+    emotion_emoticon = db.Column(db.String(255), nullable=True)
+    color = db.Column(db.String(255), nullable=False)
 
 
 with app.app_context():
@@ -121,8 +137,10 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    for i in range(len(current_user.emotions)):
+        print(f'Emotion: {current_user.emotions[i].emotion_description}, Emoticon: {current_user.emotions[i].emotion_emoticon}, Color: {current_user.emotions[i].color}')
     text = f'Hello, {current_user.username}!, {current_user.calendar_logs[0].event_date} {current_user.calendar_logs[0].event_time} {current_user.calendar_logs[0].description}'
-    text2 = f'Hello, {current_user.emotions[0].color} {current_user.emotions[0].emotion_description} {current_user.emotions[0].emotion_emoticon}'
+    text2 = f'Hello, {current_user.emotions[4].color} {current_user.emotions[4].emotion_description} {current_user.emotions[4].emotion_emoticon}'
     return text2
 
 
@@ -183,10 +201,26 @@ def emotion_create():
         flash('Please fill in all fields.', 'danger')
     return render_template('emotion_create.html', form=form)
 
-@app.route('/main')
+@app.route('/main', methods=['GET', 'POST'])
 @login_required
 def main():
-    return render_template('main.html')
+    form=CalendarLogForm()
+    if form.validate_on_submit():
+        log_date = form.log_date.data
+        log_time = form.log_time.data
+        emotions = form.emotions.data
+        description = form.description.data
+        
+        new_log = CalendarLog(
+            user_id=current_user.id,
+            event_date=log_date,
+            event_time=log_time,
+            description=description
+        )
+        db.session.add(new_log)
+        db.session.commit()
+        flash('Event added successfully!', 'success')
+    return render_template('main.html', form=form )
 
 @app.route('/daily')
 @login_required

@@ -180,35 +180,24 @@
       <div class="home-icon">🏠</div>
     </aside>
     <main class="entry-form">
-      <h1>New mood log</h1>
-      <input type="date" class="date-input" />
-      <textarea placeholder="Write your log here..."></textarea>
+      <form method="POST">
+        {{ form.hidden_tag() }}
+        <h1>New mood log</h1>
+        {{ form.log_date(class = "date-input") }}
+        {{ form.log_time(class = "date-input") }}
+        {{ form.description(placeholder="Write your log here...", class = "textarea") }}
 
-      <div class="mood-section">
+        <div class="mood-section">
         <label>Choose your mood</label>
-        <div class="moods">
-          <button class="mood sad">😢</button>
-          <button class="mood unhappy">🙁</button>
-          <button class="mood neutral">😐</button>
-          <button class="mood happy">🙂</button>
-          <button class="mood angry">😠</button>
-          <button class="mood furious">😡</button>
+        {{ form.emotions(class = "moods") }}
         </div>
-      </div>
 
-      <div class="mood-reason">
-        <input type="text" placeholder="Why are you felling that way?" />
-      </div>
-
-      <div class="image-upload">
-        <input type="file" accept="image/*" id="imageInput" />
-        <img id="previewImage" style="display:none;" />
-      </div>
-
-      <p>
-      <button id="return" class="save-button" onclick="NoAddMoodLog()">Return</button>
-      <button class="save-button">💾 Save Log</button>
-      </p>
+        <p>
+        {{ form.submit(class_="save-button") }}
+        <button id="return" class="save-button" onclick="NoAddMoodLog()">Return</button>
+        <button class="save-button">💾 Save Log</button>
+        </p>
+      </form>
     </main>
   </div>
 

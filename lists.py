@@ -1,5 +1,7 @@
 
+
 emotions_list = [
+                                ('', 'None'),
                                 ('😊', '😊 Happy'),
                                 ('😢', '😢 Sad'),
                                 ('😠', '😠 Angry'),
