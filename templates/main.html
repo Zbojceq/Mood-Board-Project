@@ -59,7 +59,37 @@
       transition: transform 0.2s;
     }
     .view-switch button:hover { transform: scale(1.05) }
-    .month-label { font-size: 22px; font-weight: bold; margin: 15px 0 20px }
+
+    .month-nav, .week-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 20px 0;
+    }
+    .month-btn, .week-btn {
+      padding: 8px 14px;
+      background: linear-gradient(90deg, #a5b4fc, #c4b5fd);
+      color: #1f2937;
+      font-weight: bold;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+    .month-btn:hover, .week-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .month-label, .week-label {
+      font-size: 22px;
+      font-weight: bold;
+      min-width: 180px;
+      text-align: center;
+    }
+
     .calendar {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -122,7 +152,6 @@
     .add-button:hover { transform: rotate(15deg) scale(1.05); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25) }
     @keyframes fadeIn { from {opacity: 0; transform: translateY(-10px);} to {opacity: 1; transform: translateY(0);} }
 
-
     .modal {
       display: none;
       position: fixed;
@@ -134,7 +163,6 @@
       justify-content: center;
       align-items: center;
     }
-
   </style>
 </head>
 <body>
@@ -145,102 +173,194 @@
       <div class="view-switch">
         <button onclick="switchView('month')">📅 Miesięczny</button>
         <button onclick="switchView('week')">🗓 Tygodniowy</button>
-        <button onclick="window.location.href='/daily'">
-          📌 Dzienny
-        </button>
+        <button onclick="window.location.href='/daily'">📌 Dzienny</button>
       </div>
     </div>
 
-    <div class="month-label" id="monthLabel">Maj 2025</div>
+    <div id="monthNav" class="month-nav">
+      <button class="month-btn" onclick="changeMonth(-1)">←</button>
+      <span class="month-label" id="monthLabel">Maj 2025</span>
+      <button class="month-btn" onclick="changeMonth(1)">→</button>
+    </div>
+
+    <div id="weekNav" class="week-nav" style="display:none;">
+      <button class="week-btn" onclick="changeWeek(-1)">←</button>
+      <span class="week-label" id="weekLabel">Tydzień 1</span>
+      <button class="week-btn" onclick="changeWeek(1)">→</button>
+    </div>
+
     <div class="calendar" id="calendar"></div>
   </div>
 
   <button class="add-button" onclick="addMoodLog()">＋</button>
 
   <div id="MoodLogWindow" class="modal">
-  {% include 'emotion_add.html' %}
+    {% include 'emotion_add.html' %}
   </div>
 
 </body>
 <script>
-    const calendar = document.getElementById('calendar');
-    const monthLabel = document.getElementById('monthLabel');
-    const weekdays = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb', 'Nd'];
+  const calendar = document.getElementById('calendar');
+  const monthLabel = document.getElementById('monthLabel');
+  const weekLabel = document.getElementById('weekLabel');
+  const monthNav = document.getElementById('monthNav');
+  const weekNav = document.getElementById('weekNav');
 
-    function renderCalendar(view = 'month') {
-      calendar.innerHTML = '';
-      const now = new Date(2025, 4, 1);
-      monthLabel.textContent = view === 'month' ? 'Maj 2025' :
-                                view === 'week' ? 'Tydzień 1 – Maj 2025' : '';
-      weekdays.forEach(day => {
-        const head = document.createElement('div');
-        head.className = 'weekday';
-        head.innerText = day;
-        calendar.appendChild(head);
-      });
+  const weekdays = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb', 'Nd'];
+  const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
+                      'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
 
-      if (view === 'month') {
-        const daysInMay = 31;
-        const startDay = new Date(2025, 4, 1).getDay();
-        const offset = (startDay + 6) % 7;
+  let currentYear = 2025;
+  let currentMonth = 4;
+  let currentView = 'month';
+  let currentWeekIndex = 0;
 
-        for (let i = 0; i < offset; i++) {
-          calendar.appendChild(document.createElement('div'));
-        }
-        for (let day = 1; day <= daysInMay; day++) {
-          const box = createDayBox(day, false);
-          calendar.appendChild(box);
-        }
-      } else if (view === 'week') {
-        for (let day = 5; day <= 11; day++) {
-          const box = createDayBox(day, true);
-          calendar.appendChild(box);
-        }
+  function getWeeksCount(year, month) {
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const firstDayWeekDay = (firstDay.getDay() + 6) % 7; 
+    const totalDays = lastDay.getDate();
+    const totalCells = firstDayWeekDay + totalDays;
+    return Math.ceil(totalCells / 7);
+  }
+
+  function renderWeek(year, month, weekIndex) {
+    calendar.innerHTML = '';
+    weekdays.forEach(day => {
+      const head = document.createElement('div');
+      head.className = 'weekday';
+      head.innerText = day;
+      calendar.appendChild(head);
+    });
+
+    const firstDay = new Date(year, month, 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayWeekDay = (firstDay.getDay() + 6) % 7;
+    const startDayNumber = weekIndex * 7 + 1 - firstDayWeekDay;
+
+    for (let i = 0; i < 7; i++) {
+      let dayNumber = startDayNumber + i;
+      let displayDate = dayNumber;
+      let dateObj;
+
+      if (dayNumber < 1) {
+        dateObj = new Date(year, month, dayNumber);
+        displayDate = dateObj.getDate();
+      } else if (dayNumber > daysInMonth) {
+        dateObj = new Date(year, month, dayNumber);
+        displayDate = dateObj.getDate();
+      } else {
+        dateObj = new Date(year, month, dayNumber);
       }
+
+      const box = createDayBox(displayDate, true, dateObj);
+      calendar.appendChild(box);
     }
 
-    function createDayBox(day, isWeekView) {
-      const box = document.createElement('div');
-      box.className = 'day' + (isWeekView ? ' week' : '');
-      box.onclick = () => alert(`📅 Szczegóły dnia ${day} maja`);
+    weekLabel.textContent = `Tydzień ${weekIndex + 1} — ${monthNames[month]} ${year}`;
+  }
 
-      const num = document.createElement('div');
-      num.className = 'day-number';
-      num.innerText = day;
-      box.appendChild(num);
+  function createDayBox(day, isWeekView, dateObj) {
+    const box = document.createElement('div');
+    box.className = 'day' + (isWeekView ? ' week' : '');
 
-      if (Math.random() > 0.7) {
-        const mood = ['happy', 'calm', 'mixed'][Math.floor(Math.random() * 3)];
-
-        const dot = document.createElement('div');
-        dot.className = 'mood-dot ' + mood;
-        box.appendChild(dot);
-      }
-      return box;
+    const isCurrentMonth = (dateObj.getMonth() === currentMonth);
+    if (!isCurrentMonth) {
+      box.style.opacity = '0.4';
+      box.style.cursor = 'default';
     }
 
-    function switchView(view) {
-      renderCalendar(view);
+    box.onclick = () => {
+      if (!isCurrentMonth) return;
+      alert(`📅 Szczegóły dnia ${day} ${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}`);
+    };
+
+    const number = document.createElement('div');
+    number.className = 'day-number';
+    number.textContent = day;
+    box.appendChild(number);
+
+    return box;
+  }
+
+  function renderMonth(year, month) {
+    calendar.innerHTML = '';
+    weekdays.forEach(day => {
+      const head = document.createElement('div');
+      head.className = 'weekday';
+      head.innerText = day;
+      calendar.appendChild(head);
+    });
+
+    const firstDay = new Date(year, month, 1);
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayWeekDay = (firstDay.getDay() + 6) % 7;
+
+    for (let i = 0; i < firstDayWeekDay; i++) {
+      const emptyBox = document.createElement('div');
+      emptyBox.className = 'day';
+      emptyBox.style.opacity = '0.4';
+      calendar.appendChild(emptyBox);
     }
 
-    function addMoodLog() {
-      event.preventDefault();
-      document.getElementById('MoodLogWindow').style.display = "flex";
+    for (let day = 1; day <= daysInMonth; day++) {
+      const box = createDayBox(day, false, new Date(year, month, day));
+      calendar.appendChild(box);
     }
 
-    function NoAddMoodLog() {
-      event.preventDefault();
-      document.getElementById('MoodLogWindow').style.display = "none";
+    monthLabel.textContent = `${monthNames[month]} ${year}`;
+  }
+
+  function switchView(view) {
+    currentView = view;
+    if (view === 'month') {
+      monthNav.style.display = 'flex';
+      weekNav.style.display = 'none';
+      renderMonth(currentYear, currentMonth);
+    } else {
+      monthNav.style.display = 'none';
+      weekNav.style.display = 'flex';
+      currentWeekIndex = 0;
+      renderWeek(currentYear, currentMonth, currentWeekIndex);
     }
+  }
 
+  function changeMonth(direction) {
+    currentMonth += direction;
+    if (currentMonth < 0) {
+      currentMonth = 11;
+      currentYear--;
+    }
+    if (currentMonth > 11) {
+      currentMonth = 0;
+      currentYear++;
+    }
+    if (currentView === 'month') {
+      renderMonth(currentYear, currentMonth);
+    } else {
+      currentWeekIndex = 0;
+      renderWeek(currentYear, currentMonth, currentWeekIndex);
+    }
+  }
 
+  function changeWeek(direction) {
+    const weeksCount = getWeeksCount(currentYear, currentMonth);
+    currentWeekIndex += direction;
+    if (currentWeekIndex < 0) {
+      changeMonth(-1);
+      currentWeekIndex = getWeeksCount(currentYear, currentMonth) - 1;
+    } else if (currentWeekIndex >= weeksCount) {
+      changeMonth(1);
+      currentWeekIndex = 0;
+    }
+    renderWeek(currentYear, currentMonth, currentWeekIndex);
+  }
 
+  renderMonth(currentYear, currentMonth);
 
-    renderCalendar();
-
-
-
-
+  function addMoodLog() {
+    document.getElementById('MoodLogWindow').style.display = 'flex';
+  }
 </script>
 </html>
 {% endblock %}

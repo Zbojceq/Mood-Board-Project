@@ -82,6 +82,31 @@
       transform: scale(1.05);
     }
 
+    .day-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+
+    .day-nav button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #a5b4fc, #c4b5fd);
+      color: #1f2937;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
+    }
+
+    .day-nav button:hover {
+      transform: scale(1.05);
+    }
+
     .selected-day {
       font-size: 24px;
       font-weight: 600;
@@ -154,7 +179,11 @@
       </div>
     </div>
 
-    <div class="selected-day" id="selectedDay">15 czerwca 2025</div>
+    <div class="day-nav">
+      <button id="prevDayBtn">←</button>
+      <div class="selected-day" id="selectedDay">15 czerwca 2025</div>
+      <button id="nextDayBtn">→</button>
+    </div>
 
     <div class="time-slots" id="timeSlots"></div>
   </div>
@@ -164,27 +193,57 @@
       "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"
     ];
 
+    const monthNames = ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca',
+                        'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'];
+
+    const selectedDayElem = document.getElementById('selectedDay');
     const container = document.getElementById('timeSlots');
 
-    timeSlots.forEach(time => {
-      const slot = document.createElement('div');
-      slot.className = 'time-slot';
-      slot.onclick = () => alert(`Szczegóły godziny: ${time}`);
+    let currentDate = new Date(2025, 5, 15); // 15 czerwca 2025 (miesiące od 0)
 
-      slot.innerText = time;
+    function formatDate(date) {
+      const day = date.getDate();
+      const month = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+      return `${day} ${month} ${year}`;
+    }
 
-      // Przykładowy losowy nastrój
-      if (Math.random() > 0.5) {
-        const mood = ['happy', 'calm', 'mixed'][Math.floor(Math.random() * 3)];
-        const dot = document.createElement('div');
-        dot.className = 'mood-dot ' + mood;
-        slot.appendChild(dot);
-      }
+    function renderTimeSlots(date) {
+      container.innerHTML = '';
+      timeSlots.forEach(time => {
+        const slot = document.createElement('div');
+        slot.className = 'time-slot';
+        slot.onclick = () => alert(`Szczegóły godziny: ${time} dnia ${formatDate(date)}`);
 
-      container.appendChild(slot);
-    });
+        slot.innerText = time;
 
-    // Możesz też dynamicznie ustawić datę wybranego dnia, np. z URL lub z daty systemowej
+        if (Math.random() > 0.5) {
+          const mood = ['happy', 'calm', 'mixed'][Math.floor(Math.random() * 3)];
+          const dot = document.createElement('div');
+          dot.className = 'mood-dot ' + mood;
+          slot.appendChild(dot);
+        }
+
+        container.appendChild(slot);
+      });
+    }
+
+    function updateView() {
+      selectedDayElem.textContent = formatDate(currentDate);
+      renderTimeSlots(currentDate);
+    }
+
+    document.getElementById('prevDayBtn').onclick = () => {
+      currentDate.setDate(currentDate.getDate() - 1);
+      updateView();
+    };
+
+    document.getElementById('nextDayBtn').onclick = () => {
+      currentDate.setDate(currentDate.getDate() + 1);
+      updateView();
+    };
+
+    updateView();
   </script>
 </body>
 </html>
