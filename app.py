@@ -17,7 +17,7 @@ login_manager = LoginManager() #implementuje moduł logowania
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Czas trwania sesji
-#csrf = CSRFProtect(app)  # Inicjalizacja CSRF Protect
+csrf = CSRFProtect(app)  # Inicjalizacja CSRF Protect
 
 
 @login_manager.user_loader
@@ -31,7 +31,6 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     calendar_logs = db.relationship('CalendarLog', backref='user', lazy=True)
-    calendar_log_day_summaries = db.relationship('CalendarLogDaySummary', backref='user', lazy=True)
     emotions = db.relationship('Emotion', backref='user', lazy=True)
 
 class CalendarLog(UserMixin, db.Model):
@@ -278,7 +277,8 @@ def main():
         }
         logs_dict.append(log_dict)
         logs_by_date[log.event_date.strftime('%Y-%m-%d')].append(log_dict)
-    return render_template('main.html', form=form, logs=logs_dict, logs_by_date=dict(logs_by_date))
+    now = datetime.now()
+    return render_template('main.html', form=form, logs=logs_dict, logs_by_date=dict(logs_by_date),now=now)
 
 @app.route('/daily')
 @login_required

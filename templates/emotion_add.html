@@ -183,8 +183,8 @@
       <form method="POST">
         {{ form.hidden_tag() }}
         <h1>New mood log</h1>
-        {{ form.log_date(class = "date-input") }}
-        {{ form.log_time(class = "date-input") }}
+        {{ form.log_date(class = "date-input", max=now.strftime('%Y-%m-%d')) }}
+        {{ form.log_time(class = "date-input", max=now.strftime('%H:%M')) }}
         {{ form.description(placeholder="Write your log here...", class = "textarea") }}
 
         <div class="mood-section">

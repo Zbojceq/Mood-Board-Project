@@ -241,8 +241,10 @@
         const slot = document.createElement('div');
         slot.className = 'time-slot';
         slot.innerText = period.label;
-
         const logsInPeriod = getLogsForPeriod(logsForDay, period);
+
+        
+
 
         // Add mood dots for each log in this period
         if (logsInPeriod.length > 0) {
@@ -258,19 +260,28 @@
           slot.appendChild(dotsContainer);
         }
 
-        // Show log details on click
-        slot.onclick = () => {
-          if (logsInPeriod.length === 0) {
-            alert(`No Logs for ${period.label}`);
-          } else {
-            let msg = `Logs For ${period.label}:\n\n`;
-            logsInPeriod.forEach(log => {
-              msg += `• ${log.event_time || ''} — ${log.description} (${log.emotion_description} ${log.emotion_emoticon || ''})\n`;
-            });
-            alert(msg);
+        const now = new Date();
+        const slotDate = new Date(date);
+        slotDate.setHours(period.start, 0, 0, 0);
+        if (slotDate > now) {
+          slot.style.opacity = '0.4';
+          slot.style.cursor = 'default';
+          slot.onclick = null;
+        } 
+        else {
+            // Show log details on click
+            slot.onclick = () => {
+              if (logsInPeriod.length === 0) {
+                alert(`No Logs for ${period.label}`);
+              } else {
+                let msg = `Logs For ${period.label}:\n\n`;
+                logsInPeriod.forEach(log => {
+                  msg += `• ${log.event_time || ''} — ${log.description} (${log.emotion_description} ${log.emotion_emoticon || ''})\n`;
+                });
+                alert(msg);
+              }
+            };
           }
-        };
-
         container.appendChild(slot);
       });
     }
