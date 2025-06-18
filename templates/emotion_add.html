@@ -193,9 +193,8 @@
         </div>
 
         <p>
-        {{ form.submit(class_="save-button") }}
-        <button id="return" class="save-button" onclick="NoAddMoodLog()">Return</button>
-        <button class="save-button">💾 Save Log</button>
+        <button id="return" class="save-button" onclick="closeMoodLog()">Return</button>
+        {{ form.submit(placeholder="💾 Save Log", class_="save-button") }}
         </p>
       </form>
     </main>

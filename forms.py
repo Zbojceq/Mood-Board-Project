@@ -2,7 +2,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, DateField, TimeField
 from wtforms.validators import DataRequired, Length, ValidationError
 from wtforms.widgets import ListWidget, ColorInput, Select, TimeInput, DateInput, TextArea
+from lists import emoticons_list
 from lists import emotions_list
+
 
 
 class LoginForm(FlaskForm):
@@ -21,7 +23,7 @@ class RegisterForm(FlaskForm):
 class EmotionForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(), Length(min=4, max=150)])
     emoticon = SelectField('Emoticon', widget=Select(),
-                            choices=emotions_list)
+                            choices=emoticons_list)
     color = StringField('Color', widget=ColorInput(), validators=[DataRequired()])
     submit = SubmitField('Create Emoticon')
 

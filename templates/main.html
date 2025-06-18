@@ -163,6 +163,14 @@
       justify-content: center;
       align-items: center;
     }
+
+    .day .mood-dot {
+    position: static;
+    display: inline-block;
+    margin-right: 3px;
+    margin-bottom: 2px;
+    }
+
   </style>
 </head>
 <body>
@@ -171,9 +179,9 @@
     <div class="top-bar">
       <h1>🎨 MoodBoard</h1>
       <div class="view-switch">
-        <button onclick="switchView('month')">📅 Miesięczny</button>
-        <button onclick="switchView('week')">🗓 Tygodniowy</button>
-        <button onclick="window.location.href='/daily'">📌 Dzienny</button>
+        <button onclick="switchView('month')">📅 Monthly</button>
+        <button onclick="switchView('week')">🗓 Weekly</button>
+        <button onclick="window.location.href='/daily'">📌 Daily</button>
       </div>
     </div>
 
@@ -200,20 +208,25 @@
 
 </body>
 <script>
+  const logs = {{ logs|tojson }};
+  const logs_by_date = {{ logs_by_date|tojson }};
+
   const calendar = document.getElementById('calendar');
   const monthLabel = document.getElementById('monthLabel');
   const weekLabel = document.getElementById('weekLabel');
   const monthNav = document.getElementById('monthNav');
   const weekNav = document.getElementById('weekNav');
 
-  const weekdays = ['Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb', 'Nd'];
-  const monthNames = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
-                      'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'];
+  const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December'];
 
-  let currentYear = 2025;
-  let currentMonth = 4;
+  const today = new Date();
+  let currentMonth = today.getMonth();
+  let currentYear = today.getFullYear();
   let currentView = 'month';
-  let currentWeekIndex = 0;
+  let currentWeekStart = new Date(today);
+  currentWeekStart.setDate(today.getDate() - today.getDay() + 1);
 
   function getWeeksCount(year, month) {
     const firstDay = new Date(year, month, 1);
@@ -257,7 +270,7 @@
       calendar.appendChild(box);
     }
 
-    weekLabel.textContent = `Tydzień ${weekIndex + 1} — ${monthNames[month]} ${year}`;
+    weekLabel.textContent = `Week ${weekIndex + 1} — ${monthNames[month]} ${year}`;
   }
 
   function createDayBox(day, isWeekView, dateObj) {
@@ -270,15 +283,37 @@
       box.style.cursor = 'default';
     }
 
+    const dateStr = dateObj.toISOString().slice(0, 10);
+    const logsForDay = logs_by_date[dateStr] || [];
+
     box.onclick = () => {
       if (!isCurrentMonth) return;
-      alert(`📅 Szczegóły dnia ${day} ${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}`);
+      if (logsForDay.length > 0) {
+        let msg = `📅 ${day} ${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}\n\n`;
+        logsForDay.forEach(log => {
+          msg += `• ${log.event_time || ''} — ${log.description} (${log.emotion_description} ${log.emotion_emoticon || ''})\n`;
+        });
+        alert(msg);
+      } else {
+        alert(`📅 No Log for ${day} ${monthNames[dateObj.getMonth()]} ${dateObj.getFullYear()}`);
+      }
     };
 
     const number = document.createElement('div');
     number.className = 'day-number';
     number.textContent = day;
     box.appendChild(number);
+
+    // Add all mood dots for this day
+    logsForDay.forEach(log => {
+      const dot = document.createElement('div');
+      dot.className = 'mood-dot';
+      dot.style.backgroundColor = log.emotion_color;
+      dot.title = `${log.emotion_description} ${log.emotion_emoticon || ''}`;
+      dot.style.position = 'static';
+      dot.style.marginRight = '3px';
+      box.appendChild(dot);
+    });
 
     return box;
   }
@@ -361,6 +396,11 @@
   function addMoodLog() {
     document.getElementById('MoodLogWindow').style.display = 'flex';
   }
+
+  function closeMoodLog() {
+    document.getElementById('MoodLogWindow').style.display = 'none';
+  }
+
 </script>
 </html>
 {% endblock %}

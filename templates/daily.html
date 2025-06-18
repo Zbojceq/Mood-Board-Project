@@ -172,16 +172,16 @@
 
   <div class="main">
     <div class="top-bar">
-      <h1>📌 Widok Dzienny</h1>
+      <h1>📌 Daily</h1>
       <div class="view-switch">
-        <button onclick="window.location.href='/daily'">Dzienny</button>
-        <button onclick="window.location.href='/main'">Miesięczny/Tygodniowy</button>
+        <button onclick="window.location.href='/daily'">Daily</button>
+        <button onclick="window.location.href='/main'">Monthly/Weekly</button>
       </div>
     </div>
 
     <div class="day-nav">
       <button id="prevDayBtn">←</button>
-      <div class="selected-day" id="selectedDay">15 czerwca 2025</div>
+      <div class="selected-day" id="selectedDay">15 June 2025</div>
       <button id="nextDayBtn">→</button>
     </div>
 
@@ -189,17 +189,31 @@
   </div>
 
   <script>
-    const timeSlots = [
-      "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"
+    // Get logs from Flask
+    const logs = {{ logs|tojson }};
+    // Define time periods (2-hour intervals)
+    const periods = [
+      { label: "00:00-02:00", start: 0, end: 2 },
+      { label: "02:00-04:00", start: 2, end: 4 },
+      { label: "04:00-06:00", start: 4, end: 6 },
+      { label: "06:00-08:00", start: 6, end: 8 },
+      { label: "08:00-10:00", start: 8, end: 10 },
+      { label: "10:00-12:00", start: 10, end: 12 },
+      { label: "12:00-14:00", start: 12, end: 14 },
+      { label: "14:00-16:00", start: 14, end: 16 },
+      { label: "16:00-18:00", start: 16, end: 18 },
+      { label: "18:00-20:00", start: 18, end: 20 },
+      { label: "20:00-22:00", start: 20, end: 22 },
+      { label: "22:00-24:00", start: 22, end: 24 }
     ];
 
-    const monthNames = ['stycznia', 'lutego', 'marca', 'kwietnia', 'maja', 'czerwca',
-                        'lipca', 'sierpnia', 'września', 'października', 'listopada', 'grudnia'];
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
 
     const selectedDayElem = document.getElementById('selectedDay');
     const container = document.getElementById('timeSlots');
 
-    let currentDate = new Date(2025, 5, 15); // 15 czerwca 2025 (miesiące od 0)
+    let currentDate = new Date(); // Start with today
 
     function formatDate(date) {
       const day = date.getDate();
@@ -208,21 +222,51 @@
       return `${day} ${month} ${year}`;
     }
 
+    function getLogsForDate(date) {
+      const dateStr = date.toISOString().slice(0, 10);
+      return logs.filter(log => log.event_date === dateStr);
+    }
+
+    function getLogsForPeriod(logsForDay, period) {
+      return logsForDay.filter(log => {
+        if (!log.event_time) return false;
+        const hour = parseInt(log.event_time.split(':')[0], 10);
+        return hour >= period.start && hour < period.end;
+      });
+    }
+
     function renderTimeSlots(date) {
       container.innerHTML = '';
-      timeSlots.forEach(time => {
+      const logsForDay = getLogsForDate(date);
+
+      periods.forEach(period => {
         const slot = document.createElement('div');
         slot.className = 'time-slot';
-        slot.onclick = () => alert(`Szczegóły godziny: ${time} dnia ${formatDate(date)}`);
+        slot.innerText = period.label;
 
-        slot.innerText = time;
+        const logsInPeriod = getLogsForPeriod(logsForDay, period);
 
-        if (Math.random() > 0.5) {
-          const mood = ['happy', 'calm', 'mixed'][Math.floor(Math.random() * 3)];
+        // Add mood dots for each log in this period
+        logsInPeriod.forEach(log => {
           const dot = document.createElement('div');
-          dot.className = 'mood-dot ' + mood;
+          dot.className = 'mood-dot';
+          dot.style.backgroundColor = log.emotion_color;
+          dot.title = `${log.emotion_description} ${log.emotion_emoticon || ''}`;
           slot.appendChild(dot);
-        }
+        });
+
+        // Show log details on click
+        slot.onclick = () => {
+          if (logsInPeriod.length === 0) {
+            alert(`No Logs for ${period.label}`);
+          } else {
+            let msg = `Logs For ${period.label}:\n\n`;
+            logsInPeriod.forEach(log => {
+              msg += `• ${log.event_time || ''} — ${log.description} (${log.emotion_description} ${log.emotion_emoticon || ''})\n`;
+            });
+            alert(msg);
+          }
+        };
 
         container.appendChild(slot);
       });

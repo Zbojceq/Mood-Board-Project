@@ -6,6 +6,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 from flask_wtf.csrf import CSRFProtect
 from datetime import datetime
+from collections import Counter, defaultdict
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -40,7 +41,9 @@ class CalendarLog(UserMixin, db.Model):
     event_date = db.Column(db.Date, nullable=False)
     event_time = db.Column(db.Time, nullable=True)
     description = db.Column(db.String(255), nullable=False)
-    emotions_logs = db.relationship('EmotionLog', backref='calendar_log', lazy=True)
+    emotion_color = db.Column(db.String(255), nullable=False)
+    emotion_description = db.Column(db.String(255), nullable=False)
+    emotion_emoticon = db.Column(db.String(255), nullable=True)
 
 class CalendarLogDaySummary(UserMixin, db.Model):
     __tablename__ = 'calendar_log_summaries'
@@ -139,9 +142,9 @@ def logout():
 def dashboard():
     for i in range(len(current_user.emotions)):
         print(f'Emotion: {current_user.emotions[i].emotion_description}, Emoticon: {current_user.emotions[i].emotion_emoticon}, Color: {current_user.emotions[i].color}')
-    text = f'Hello, {current_user.username}!, {current_user.calendar_logs[0].event_date} {current_user.calendar_logs[0].event_time} {current_user.calendar_logs[0].description}'
-    text2 = f'Hello, {current_user.emotions[4].color} {current_user.emotions[4].emotion_description} {current_user.emotions[4].emotion_emoticon}'
-    return text2
+    for i in range(len(current_user.calendar_logs)):
+        print(f'Log {i}: {current_user.calendar_logs[i].event_date} {current_user.calendar_logs[i].event_time} {current_user.calendar_logs[i].description} {current_user.calendar_logs[i].emotion_color} {current_user.calendar_logs[i].emotion_description} {current_user.calendar_logs[i].emotion_emoticon}')
+    return 
 
 
 @app.route('/')
@@ -177,7 +180,45 @@ def avatar():
 @app.route('/stats')
 @login_required
 def stats():
-    return render_template('stats.html')
+    logs = CalendarLog.query.filter_by(user_id=current_user.id).all()
+    if not logs:
+        return render_template('stats.html', stats_available=False)
+    mood_counter = Counter((log.emotion_description, log.emotion_emoticon, log.emotion_color) for log in logs)
+    most_common_moods = mood_counter.most_common(3)
+    weekday_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    weekday_emotions = defaultdict(list)
+
+    for log in logs:
+        if log.event_date and log.emotion_description:
+            weekday = log.event_date.weekday()
+            weekday_emotions[weekday].append((log.emotion_description, log.emotion_emoticon, log.emotion_color))
+
+    weekday_stats = []
+    for i in range(7):
+        emotions = weekday_emotions.get(i, [])
+        if emotions:
+            counter = Counter(emotions)
+            (desc, emoticon, color), count = counter.most_common(1)[0]
+            weekday_stats.append({
+                'weekday': weekday_names[i],
+                'emotion': desc,
+                'emoticon': emoticon,
+                'color': color,
+                'count': count
+            })
+        else:
+            weekday_stats.append({
+                'weekday': weekday_names[i],
+                'emotion': 'Brak danych',
+                'emoticon': '',
+                'color': '#e5e7eb',
+                'count': 0
+            })
+
+    return render_template('stats.html'
+                           , stats_available=True,
+                           most_common_moods=most_common_moods,
+                           weekday_stats=weekday_stats)
 
 @app.route('/emotion_create', methods=['GET', 'POST'])
 def emotion_create():
@@ -186,6 +227,7 @@ def emotion_create():
         description = form.name.data
         emoticon = form.emoticon.data
         color = form.color.data
+        
         
         new_emotion = Emotion(
             user_id=current_user.id,
@@ -204,28 +246,58 @@ def emotion_create():
 @app.route('/main', methods=['GET', 'POST'])
 @login_required
 def main():
-    form=CalendarLogForm()
+    form = CalendarLogForm()
     if form.validate_on_submit():
         log_date = form.log_date.data
         log_time = form.log_time.data
         emotions = form.emotions.data
         description = form.description.data
-        
+        print(f'Log Date: {log_date}, Log Time: {log_time}, Emotions: {emotions}, Description: {description}')
+
         new_log = CalendarLog(
             user_id=current_user.id,
             event_date=log_date,
             event_time=log_time,
-            description=description
+            description=description,
+            emotion_color= emotions.split(',')[0],
+            emotion_description=emotions.split(',')[1],
+            emotion_emoticon=emotions.split(',')[2] if len(emotions.split(',')) > 2 else None
         )
         db.session.add(new_log)
         db.session.commit()
         flash('Event added successfully!', 'success')
-    return render_template('main.html', form=form )
+
+    logs = CalendarLog.query.filter_by(user_id=current_user.id).all()
+    logs_dict = []
+    logs_by_date = defaultdict(list)
+    for log in logs:
+        log_dict = {
+            'event_date': log.event_date.strftime('%Y-%m-%d'),
+            'event_time': log.event_time.strftime('%H:%M') if log.event_time else "",
+            'description': log.description,
+            'emotion_color': log.emotion_color,
+            'emotion_description': log.emotion_description,
+            'emotion_emoticon': log.emotion_emoticon
+        }
+        logs_dict.append(log_dict)
+        logs_by_date[log.event_date.strftime('%Y-%m-%d')].append(log_dict)
+    return render_template('main.html', form=form, logs=logs_dict, logs_by_date=dict(logs_by_date))
 
 @app.route('/daily')
 @login_required
 def daily():
-    return render_template('daily.html')
+    logs = CalendarLog.query.filter_by(user_id=current_user.id).all()
+    logs_dict = []
+    for log in logs:
+        logs_dict.append({
+            'event_date': log.event_date.strftime('%Y-%m-%d'),
+            'event_time': log.event_time.strftime('%H:%M') if log.event_time else None,
+            'description': log.description,
+            'emotion_color': log.emotion_color,
+            'emotion_description': log.emotion_description,
+            'emotion_emoticon': log.emotion_emoticon
+        })
+    return render_template('daily.html', logs=logs_dict)
 
 @app.route('/side_menu')
 def side_menu():

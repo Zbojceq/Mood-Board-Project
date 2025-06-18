@@ -159,64 +159,64 @@
 </head>
 <body>
   <div class="container">
-    <h2><i class="fa-solid fa-face-smile"></i> Statystyki Nastroju</h2>
+    <h2><i class="fa-solid fa-face-smile"></i> Mood Statistics</h2>
 
-    <div class="section">
-      <div class="mood-summary">
-        <i class="fa-solid fa-gauge-high" style="color:#6366f1;"></i>
-        Średnie samopoczucie: 😊
-      </div>
-    </div>
+    {% if not stats_available %}
+        <div class="section">
+          <div class="mood-summary">
+            No data available to display statistics.
+          </div>
+        </div>
+    {% else %}
+        <div class="section">
+          <div class="mood-summary">
+            <i class="fa-solid fa-face-laugh-beam" style="color:#10b981;"></i>
+            Most Common Moods:
+          </div>
+          <div class="most-frequent">
+          {% for (desc, emoticon, color), count in most_common_moods %}
+            <div class="mood-chip" style="background: {{ color }};"> 
+              {{ emoticon or '' }} {{ desc }} ({{ count }})
+            </div>
+          {% endfor %}
+        </div>
 
-    <div class="section">
-      <div class="mood-summary">
-        <i class="fa-solid fa-face-laugh-beam" style="color:#10b981;"></i>
-        Najczęstsze nastroje:
+        <div class="section">
+          <div class="mood-summary">
+            <i class="fa-solid fa-chart-bar" style="color:#f59e0b;"></i>
+            Tygodniowy wykres nastrojów
+          </div>
+          <div class="bar-chart">
+            <div class="section">
+              <table class="table">
+                <tbody>
+                  {% for stat in weekday_stats %}
+                    <tr>
+                      <td>{{ stat.weekday }}</td>
+                      <td>
+                        <span class="mood-chip" style="background: {{ stat.color }};">
+                          {% if stat.emoticon %}{{ stat.emoticon }} {% endif %}{{ stat.emotion }}
+                        </span>
+                      </td>
+                      <td>{{ stat.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="most-frequent">
-        <div class="mood-chip">😊 Szczęśliwy</div>
-        <div class="mood-chip">😌 Spokojny</div>
-        <div class="mood-chip">😕 Mieszany</div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="mood-summary">
-        <i class="fa-solid fa-chart-bar" style="color:#f59e0b;"></i>
-        Tygodniowy wykres nastrojów
-      </div>
-      <div class="bar-chart">
-        <div class="bar"><div class="bar-fill" style="width: 80%;">Pon</div></div>
-        <div class="bar"><div class="bar-fill" style="width: 65%;">Wt</div></div>
-        <div class="bar"><div class="bar-fill" style="width: 70%;">Śr</div></div>
-        <div class="bar"><div class="bar-fill" style="width: 50%;">Czw</div></div>
-        <div class="bar"><div class="bar-fill" style="width: 90%;">Pt</div></div>
-        <div class="bar"><div class="bar-fill" style="width: 60%;">Sob</div></div>
-        <div class="bar"><div class="bar-fill" style="width: 75%;">Ndz</div></div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="mood-summary">
-        <i class="fa-solid fa-seedling" style="color:#22c55e;"></i>
-        Czynniki wpływające:
-      </div>
-      <div class="factor-list">
-        <div>🧘 Medytacja</div>
-        <div>🚶 Spacer</div>
-        <div>📖 Czytanie</div>
-        <div>📱 Media społecznościowe</div>
-      </div>
-    </div>
+    {% endif %}
 
     <button class="calendar-button" id="calendarButton">
-      <i class="fa-solid fa-arrow-left"></i> Powrót do kalendarza
+      <i class="fa-solid fa-arrow-left"></i> Back to Calendar
     </button>
   </div>
 
   <script>
     document.getElementById('calendarButton').addEventListener('click', function () {
-      alert('Przejście do kalendarza!');
+      window.location.href = '/main';
     });
   </script>
 </body>
