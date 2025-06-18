@@ -1,0 +1,145 @@
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: transparent; height: 100vh; }
+.background {
+  position: fixed; inset: 0; z-index: -1;
+  background: url('emoji_image_blur.png') no-repeat center center/cover; opacity: 0.2;
+}
+header { background: #f0e9ff; padding: 10px; text-align: center; }
+h1 { color: black; font-size: 28px; }
+main { display: flex; flex-direction: column; gap: 20px; padding: 20px; }
+
+.top-row, .bottom-row {
+  display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  flex: 1 1 400px;
+  min-height: 200px;
+}
+
+.calendar {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;
+}
+.calendar-day {
+  background: #eee; text-align: center; border-radius: 10px;
+  padding: 10px; min-height: 60px; position: relative;
+  transition: 0.3s ease;
+}
+.calendar-day:hover { opacity: 0.8; cursor: pointer; }
+.today {
+  border: 2px solid #6c63ff; box-shadow: 0 0 10px #6c63ff;
+}
+
+.lottie {
+  width: 100px;
+  height: 100px;
+  margin: auto;
+}
+.chatbox {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  height: 140px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #f9f9ff;
+}
+.chat-input {
+  display: flex; gap: 10px;
+}
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+.chat-input button {
+  padding: 10px 20px;
+  border: none;
+  background: #6c63ff;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.chat-message {
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  background: #ece0ff;
+  border-radius: 15px;
+  max-width: 70%;
+}
+
+.weekday-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 5px;
+  font-weight: bold;
+  text-align: center;
+  color: #6c63ff;
+}
+.calendar-day:hover {
+  outline: 2px solid #6c63ff;
+  background-color: #f0e9ff !important;
+}
+
+.calendar-day.today {
+  outline: 3px solid #6c63ff !important;
+  position: relative;
+}
+.calendar-day.today::after {
+  content: "Dziś";
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  font-size: 10px;
+  color: #6c63ff;
+  font-weight: bold;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #6c63ff;
+}
+.calendar-header button {
+  background: none;
+  border: none;
+  color: #6c63ff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.chat-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+.chat-input button {
+  padding: 10px 20px;
+  border: none;
+  background: #6c63ff;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+.chat-message {
+  background: #ece0ff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-top: 5px;
+}

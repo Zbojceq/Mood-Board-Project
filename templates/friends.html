@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relacje</title>
+    <link rel="stylesheet" href="static/friends.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Nagłówek z tłem -->
+        <header>
+            <button id="backButton" class="back-button"><i class="fas fa-arrow-left"></i></button>
+            <h1>Relacje</h1>
+            <div class="header-icons">
+                <i class="fas fa-cog"></i>
+                <i class="fas fa-question-circle"></i>
+            </div>
+        </header>
+
+        <!-- Sekcja wysyłania zaproszenia -->
+        <section class="invite-section">
+            <h2>Wysłanie zaproszenia</h2>
+            <input type="text" id="inviteId" placeholder="ID lub e-mail">
+            <button id="sendInvite"><i class="fas fa-paper-plane"></i> Wyślij zaproszenie</button>
+        </section>
+
+        <!-- Sekcja oczekujących zaproszeń -->
+        <section class="invites-pending">
+            <h2>Oczekujące zaproszenia</h2>
+            <div id="pendingInvites">
+                <!-- Zaproszenia wyświetlane dynamicznie -->
+            </div>
+        </section>
+
+        <!-- Sekcja połączonych osób -->
+        <section class="connected-people">
+            <h2>Połączone osoby</h2>
+            <div id="connectedPeople">
+                <!-- Połączone osoby wyświetlane dynamicznie -->
+            </div>
+        </section>
+
+        <!-- Sekcja tworzenia grup -->
+        <section class="group-section">
+            <h2>Tworzenie grupy</h2>
+            <input type="text" id="groupName" placeholder="Nazwa grupy">
+            <button id="groupCreateButton">Stwórz grupę</button>
+        </section>
+
+        <footer>
+            <button class="footer-btn">Ustawienia</button>
+            <button class="footer-btn">Pomoc</button>
+        </footer>
+    </div>
+
+    <script src="static/friends.js"></script>
+</body>
+</html>

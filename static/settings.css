@@ -1,0 +1,174 @@
+/* Global Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f4f7fc;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+/* Header Styles */
+header {
+    padding: 30px;
+    background-color: #5a4fcf;
+    color: white;
+    width: 100%;
+    text-align: center;
+    font-size: 3em;
+    font-weight: bold;
+}
+
+/* Container for Content */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    padding: 40px;
+}
+
+/* Main content block */
+.content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* Lottie Animation */
+.lottie-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 50px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 40px;
+}
+
+button {
+    padding: 18px;
+    font-size: 1.5em;
+    background-color: #5a4fcf;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #4839b4;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Settings Grid */
+.settings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.settings-section {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 10px;
+    border: 3px solid #5a4fcf;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.settings-section h2 {
+    color: #5a4fcf;
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.settings-section .content {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.settings-section .content input,
+.settings-section .content button {
+    width: 100%;
+    padding: 22px;
+    margin: 12px 0;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    font-size: 1.5em;
+}
+
+.save-button {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+/* Input Fields Styling */
+input[type="text"], input[type="email"], input[type="password"], input[type="file"] {
+    padding: 22px;
+    font-size: 1.5em;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+}
+
+input[type="file"] {
+    background-color: #f5f5f5;
+}
+
+/* Animated Expand/Collapse */
+.settings-section .content {
+    display: none;
+}
+
+.settings-section.active .content {
+    display: block;
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+    to {
+        max-height: 500px;
+        opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .settings {
+        grid-template-columns: 1fr;
+    }
+
+    .lottie-container {
+        justify-content: center;
+    }
+
+    button {
+        width: 100%;
+        font-size: 1.5em;
+        padding: 22px;
+    }
+}

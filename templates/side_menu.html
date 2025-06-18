@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f4ff;
+      display: flex;
+    }
+
+    .sidebar_special {
+      background: linear-gradient(180deg, #5c4ee5, #8f6aff);
+      width: 80px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .sidebar_special i {
+      color: white;
+      font-size: 1.5rem;
+      margin: 1.5rem 0;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .sidebar_special i:hover {
+      transform: scale(1.2);
+    }
+
+    .tooltip {
+      position: absolute;
+      left: 80px;
+      background: #ffffff;
+      color: #333;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: none;
+      white-space: nowrap;
+    }
+
+    .icon-container_special {
+      position: relative;
+    }
+
+    .icon-container_special:hover .tooltip {
+      display: block;
+    }
+
+    .icon-button_special {
+      background: none;
+      border: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      outline: none;
+      margin: 0.5rem 0;
+    }
+
+    .icon-button:focus .sidebar i,
+    .icon-button:hover .sidebar i {
+      transform: scale(1.2);
+    }
+
+
+
+</style>
+</head>
+<body>
+  <div class="sidebar_special">
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/main'">
+      <i class="fas fa-calendar"></i>
+      <div class="tooltip">Calendar</div>
+    </button>
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/stats'">
+      <i class="fas fa-chart-line"></i>
+      <div class="tooltip">Stats</div>
+    </button>
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/notifs'">
+      <i class="fas fa-bell"></i>
+      <div class="tooltip">Notifications</div>
+    </button>
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/emotion_create'">
+      <i class="fas fa-face-smile"></i>
+      <div class="tooltip">Create Emotion</div>
+    </button>
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/settings'">
+      <i class="fas fa-cog"></i>
+      <div class="tooltip">Settings</div>
+    </button>
+    <button class="icon-button_special icon-container_special" onclick="window.location.href='/logout'">
+      <i class="fas fa-sign-out-alt"></i>
+      <div class="tooltip">Log out</div>
+    </button>
+  </div>
+
+
+  
+  {% block main %}{% endblock %}
+
+</body>
+</html>

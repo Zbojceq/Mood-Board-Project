@@ -1,0 +1,116 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+}
+
+.background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.page-container {
+    max-width: 1200px;
+    width: 95%;
+    margin: 60px auto 40px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.image-container img {
+    max-width: 450px;
+    width: 90%;
+    margin-bottom: 30px;
+    transform: translateX(-10px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    border-radius: 20px;
+}
+
+.quote-container {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    padding: 50px 30px;
+    border-radius: 25px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 800px;
+    color: #1e1e1e;
+    animation: fadeInContainer 1s ease;
+}
+
+@keyframes fadeInContainer {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    transition: opacity 0.5s ease;
+}
+
+h2 {
+    font-size: 2.4em;
+    margin-bottom: 25px;
+}
+
+#quote {
+    font-size: 2em;
+    font-style: italic;
+    margin: 20px 0;
+}
+
+#author {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #333;
+}
+
+.button-group, .save-button {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+button {
+    padding: 14px 32px;
+    background-color: #5a4fcf;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+}
+
+button:hover {
+    background-color: #4839b4;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        margin: 30px auto;
+    }
+    h2 {
+        font-size: 2em;
+    }
+    #quote {
+        font-size: 1.5em;
+    }
+    .image-container img {
+        max-width: 300px;
+    }
+}

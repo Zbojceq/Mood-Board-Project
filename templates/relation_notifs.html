@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Board</title>
+    <link rel="stylesheet" href="static/relation_notifs.css">
+</head>
+<body>
+    <div class="header">
+        <span class="logo">Mood Board</span>
+        <button class="back-btn" id="backBtn">Powrót</button>
+    </div>
+
+    <div class="container">
+        <!-- Connections -->
+        <div class="card">
+            <h2>Connections</h2>
+            <div class="card-content">
+                <input type="text" placeholder="Enter Connection ID">
+                <button class="btn" id="sendInvitationBtn">Send Invitation</button>
+                <div class="lottie-animation" id="lottie1"></div>
+                <div class="expandable">
+                    <p>Consult and Interact</p>
+                    <div class="details">
+                        <p>Invite someone to interact with you</p>
+                        <p>View interactions such as messages, calls, and consultations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Person Details -->
+        <div class="card">
+            <h2>Person Details</h2>
+            <div class="card-content">
+                <div class="lottie-animation" id="lottie2"></div>
+                <div class="expandable">
+                    <p>Move Certifion</p>
+                    <div class="details">
+                        <p>Supnial, Btcoad</p>
+                        <p>Additional personal info here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="card">
+            <h2>Notifications</h2>
+            <div class="card-content">
+                <p>New Mood Change</p>
+                <button class="btn" id="acknowledgeBtn">Acknowledge</button>
+                <div class="lottie-animation" id="lottie3"></div>
+                <div class="expandable">
+                    <p>Ased Day</p>
+                    <div class="details">
+                        <p>Pay Serry Send: Send notifications for changes in mood</p>
+                        <p>Alerts for critical mood shifts or milestones</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.8/lottie.min.js"></script>
+    <script src="static/relation_notifs.js"></script>
+</body>
+</html>

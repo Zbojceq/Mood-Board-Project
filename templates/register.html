@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Screen</title>
+    <link rel="stylesheet" href="static/register.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</head>
+<body>
+    <div class="register-container">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flashes">
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        <!-- Nowy rząd z animacjami + tytułem -->
+        <div class="header-row">
+            <lottie-player src="https://lottie.host/da592f6a-17f2-4ab4-a76e-623dbbad4f71/6FRchh4Uwe.json"
+                           background="transparent" speed="1" style="width: 100px; height: 100px;" loop autoplay>
+            </lottie-player>
+
+            <h2>Create Account</h2>
+
+            <lottie-player src="https://lottie.host/8d5f00a4-ec94-4dde-837a-d1a9f7ab2aee/IAInKXMzE6.json"
+                           background="transparent" speed="1" style="width: 100px; height: 100px;" loop autoplay>
+            </lottie-player>
+        </div>
+
+        <form id="registerForm" method="POST" action="">
+            {{ form.hidden_tag() }}
+            <p>
+              <br>
+              {{ form.username(size=32, placeholder=form.username.label.text, class_="input") }}
+                {% for error in form.username.errors %}
+                    <span id="error" class="error">{{ error }}</span>
+                {% endfor %}
+              <br>
+            <p>
+              <br>
+              {{ form.email(size=32, placeholder=form.email.label.text, class_="input") }}
+                {% for error in form.email.errors %}
+                    <span id="error" class="error">{{ error }}</span>
+                {% endfor %}
+              <br>
+            <p>
+              <br>
+              {{ form.password(size=32, placeholder=form.password.label.text, class_="input") }}
+                {% for error in form.password.errors %}
+                    <span id="error" class="error">{{ error }}</span>
+                {% endfor %}
+              <br>
+            </p>
+            <p>
+              <br>
+              {{ form.confirm_password(size=32, placeholder=form.confirm_password.label.text, class_="input") }}
+              <br>
+            </p>
+            <p> 
+                <button type="submit" id="register" class="register">Register</button>
+            </p>
+            <p>
+              Already have an account? <a href="{{ url_for('login') }}">Login here</a>
+            </p>
+          </form>
+    </div>
+
+</body>
+
+<script>
+ 
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('registerForm');
+        const usernameInput = form.querySelector('[name="username"]');
+        let usernameErrorSpan = document.createElement('span');
+        usernameErrorSpan.className = 'error';
+        usernameInput.parentNode.insertBefore(usernameErrorSpan, usernameInput.nextSibling);
+        let usernameValid = false;
+        let emailValid = false;
+        const input = document.getElementById("register");
+
+        function updateButton() {
+            input.disabled = !(usernameValid && emailValid);
+        }
+
+        usernameInput.addEventListener('input', function() {
+            fetch('/check_username', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username: usernameInput.value})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    usernameErrorSpan.textContent = 'Username already exists.';
+                    usernameValid = false;
+                } else {
+                    usernameErrorSpan.textContent = '';
+                    usernameValid = true;
+                }
+                const username = usernameInput.value;
+                if (usernameValid) {
+                    if (username.length < 3 || username.length > 20) {
+                        usernameErrorSpan.textContent = 'Username must be between 3 and 20 characters.';
+                        usernameValid = false;
+                    } else {
+                        usernameErrorSpan.textContent = '';
+                        usernameValid = true;
+                    }
+                }
+                updateButton(); 
+            });
+        });
+
+        const emailInput = form.querySelector('[name="email"]');
+        let emailErrorSpan = document.createElement('span');
+        emailErrorSpan.className = 'error';
+        emailInput.parentNode.insertBefore(emailErrorSpan, emailInput.nextSibling);
+        emailInput.addEventListener('input', function() {
+            fetch('/check_email', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email: emailInput.value})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    emailErrorSpan.textContent = 'Email already exists.';
+                    emailValid = false;
+                } else {
+                    emailErrorSpan.textContent = '';
+                    emailValid = true;
+                }
+                const email = emailInput.value;
+                if(emailValid) {
+                    if (!validateEmail(email)) {
+                        emailErrorSpan.textContent = 'Invalid email format.';
+                        emailValid = false;
+                    } else {
+                        emailErrorSpan.textContent = '';
+                        emailValid = true;
+                    }
+                }
+                updateButton(); // <-- ensure button state updates
+            });
+        });
+
+        // Password length validation
+        const passwordInput = form.querySelector('[name="password"]');
+        let passwordErrorSpan = document.createElement('span');
+        passwordErrorSpan.className = 'error';
+        passwordInput.parentNode.insertBefore(passwordErrorSpan, passwordInput.nextSibling);
+        passwordInput.addEventListener('input', function() {
+            if (passwordInput.value.length < 4) {
+                passwordErrorSpan.textContent = 'Password must be at least 4 characters.';
+            } else {
+                passwordErrorSpan.textContent = '';
+            }
+        });
+
+        form.addEventListener('submit', function(event) {
+            const password = form.querySelector('[name="password"]');
+            const confirmPassword = form.querySelector('[name="confirm_password"]');
+            if (password && confirmPassword && password.value !== confirmPassword.value) {
+                event.preventDefault();
+                alert('Passwords do not match!');
+                confirmPassword.focus();
+            }
+            if (password && password.value.length < 4) {
+                event.preventDefault();
+                alert('Password must be at least 4 characters.');
+                password.focus();
+            }
+        });
+
+        
+        
+    });
+
+    function validateEmail(email) {
+        return /^\S+@\S+\.\S+$/.test(email);
+    }
+
+</script>
+</html>
