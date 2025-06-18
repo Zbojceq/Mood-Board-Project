@@ -45,35 +45,12 @@ class CalendarLog(UserMixin, db.Model):
     emotion_description = db.Column(db.String(255), nullable=False)
     emotion_emoticon = db.Column(db.String(255), nullable=True)
 
-class CalendarLogDaySummary(UserMixin, db.Model):
-    __tablename__ = 'calendar_log_summaries'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    event_date = db.Column(db.Date, nullable=False)
-    description = db.Column(db.String(255), nullable=False)
-    emotions_logs = db.relationship('EmotionLogSummary', backref='calendar_log_day_summary', lazy=True)
-
 class Emotion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     emotion_description = db.Column(db.String(255), nullable=False)
     emotion_emoticon = db.Column(db.String(255), nullable=True)
     color = db.Column(db.String(255), nullable=False)
-
-class EmotionLog(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('calendar_logs.id'), nullable=False)
-    emotion_description = db.Column(db.String(255), nullable=False)
-    emotion_emoticon = db.Column(db.String(255), nullable=True)
-    color = db.Column(db.String(255), nullable=False)
-
-class EmotionLogSummary(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('calendar_log_summaries.id'), nullable=False)
-    emotion_description = db.Column(db.String(255), nullable=False)
-    emotion_emoticon = db.Column(db.String(255), nullable=True)
-    color = db.Column(db.String(255), nullable=False)
-
 
 with app.app_context():
     db.create_all() 
@@ -115,6 +92,29 @@ def check_email():
     exists = User.query.filter_by(email=email).first() is not None
     return jsonify({'exists': exists})
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.route('/')
+@login_required
+def hello_user():
+    return redirect(url_for('main'))
+
+
+#THESE ARE FOR TESTING, ITS LEFT HERE FOR FUTURE TEST PURPOSES
+'''
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    for i in range(len(current_user.emotions)):
+        print(f'Emotion: {current_user.emotions[i].emotion_description}, Emoticon: {current_user.emotions[i].emotion_emoticon}, Color: {current_user.emotions[i].color}')
+    for i in range(len(current_user.calendar_logs)):
+        print(f'Log {i}: {current_user.calendar_logs[i].event_date} {current_user.calendar_logs[i].event_time} {current_user.calendar_logs[i].description} {current_user.calendar_logs[i].emotion_color} {current_user.calendar_logs[i].emotion_description} {current_user.calendar_logs[i].emotion_emoticon}')
+    return 
+
 @app.route('/add_test')
 @login_required
 def add_test():
@@ -131,31 +131,16 @@ def add_test():
     db.session.commit()
     return 'Test added!'
 
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
 
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    for i in range(len(current_user.emotions)):
-        print(f'Emotion: {current_user.emotions[i].emotion_description}, Emoticon: {current_user.emotions[i].emotion_emoticon}, Color: {current_user.emotions[i].color}')
-    for i in range(len(current_user.calendar_logs)):
-        print(f'Log {i}: {current_user.calendar_logs[i].event_date} {current_user.calendar_logs[i].event_time} {current_user.calendar_logs[i].description} {current_user.calendar_logs[i].emotion_color} {current_user.calendar_logs[i].emotion_description} {current_user.calendar_logs[i].emotion_emoticon}')
-    return 
+'''
 
 
-@app.route('/')
-@login_required
-def hello_world():
-    return 'Hello, World!'
 
+####### THESE ARE NOT IMPLEMENTED 
+'''
 @app.route('/start')
 def start():
     return render_template('start.html')
-
 
 @app.route('/quotes')
 def quotes():
@@ -173,9 +158,15 @@ def friends():
 def relation_notifs():
     return render_template('relation_notifs.html')  
 
+
 @app.route('/avatar')
 def avatar():
     return render_template('avatar.html')  
+'''
+
+
+
+
 
 @app.route('/stats')
 @login_required
@@ -220,6 +211,9 @@ def stats():
                            most_common_moods=most_common_moods,
                            weekday_stats=weekday_stats)
 
+
+#EMOTION CREATING IS IMPLEMENTED BUT U CANT USE THEM YET WHILE ADDING LOGS, ITS OPTIONAL PROJECT GOAL SO IT MAY OR NOT BE IMPLEMENTED IN FINAL
+
 @app.route('/emotion_create', methods=['GET', 'POST'])
 def emotion_create():
     form = EmotionForm()
@@ -242,6 +236,9 @@ def emotion_create():
     else:
         flash('Please fill in all fields.', 'danger')
     return render_template('emotion_create.html', form=form)
+
+
+#WRITTEN LOGS APPEAR IN POPUP FOR NOW AS IT NEEDS ADDICTIONAL FRONTEND DONE, BOX WILL APPEAR IN FINAL PROJECT
 
 @app.route('/main', methods=['GET', 'POST'])
 @login_required
@@ -299,18 +296,14 @@ def daily():
         })
     return render_template('daily.html', logs=logs_dict)
 
-@app.route('/side_menu')
-def side_menu():
-    return render_template('side_menu.html')
+
+
+## THESE TWO ARE NOT CODED YET (notifs are planned be for final, settings are just simple buttons not important for whole project)
 
 @app.route('/notifs')
 @login_required
 def notifs():
     return render_template('notifs.html')
-
-@app.route('/emotion_add')
-def emotion_add():
-    return render_template('emotion_add.html')
 
 @app.route('/settings')
 @login_required

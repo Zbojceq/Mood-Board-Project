@@ -126,7 +126,7 @@
     .time-slot {
       background-color: var(--white);
       border-radius: 14px;
-      padding: 30px 20px;
+      padding: 30px 20px 28px 20px;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
       cursor: pointer;
       transition: all 0.3s ease;
@@ -146,25 +146,26 @@
       transform: scale(1.04);
     }
 
+    .mood-dots {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 10px;
+      margin-left: auto;
+      margin-right: auto;
+      z-index: 2;
+    }
+
     .mood-dot {
       width: 18px;
       height: 18px;
       border-radius: 50%;
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-    }
-
-    .happy {
-      background-color: var(--accent-yellow);
-    }
-
-    .calm {
-      background-color: var(--accent-green);
-    }
-
-    .mixed {
-      background-color: var(--accent-orange);
+      display: inline-block;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
@@ -174,7 +175,6 @@
     <div class="top-bar">
       <h1>📌 Daily</h1>
       <div class="view-switch">
-        <button onclick="window.location.href='/daily'">Daily</button>
         <button onclick="window.location.href='/main'">Monthly/Weekly</button>
       </div>
     </div>
@@ -189,9 +189,7 @@
   </div>
 
   <script>
-    // Get logs from Flask
     const logs = {{ logs|tojson }};
-    // Define time periods (2-hour intervals)
     const periods = [
       { label: "00:00-02:00", start: 0, end: 2 },
       { label: "02:00-04:00", start: 2, end: 4 },
@@ -213,7 +211,7 @@
     const selectedDayElem = document.getElementById('selectedDay');
     const container = document.getElementById('timeSlots');
 
-    let currentDate = new Date(); // Start with today
+    let currentDate = new Date();
 
     function formatDate(date) {
       const day = date.getDate();
@@ -247,13 +245,18 @@
         const logsInPeriod = getLogsForPeriod(logsForDay, period);
 
         // Add mood dots for each log in this period
-        logsInPeriod.forEach(log => {
-          const dot = document.createElement('div');
-          dot.className = 'mood-dot';
-          dot.style.backgroundColor = log.emotion_color;
-          dot.title = `${log.emotion_description} ${log.emotion_emoticon || ''}`;
-          slot.appendChild(dot);
-        });
+        if (logsInPeriod.length > 0) {
+          const dotsContainer = document.createElement('div');
+          dotsContainer.className = 'mood-dots';
+          logsInPeriod.forEach(log => {
+            const dot = document.createElement('div');
+            dot.className = 'mood-dot';
+            dot.style.backgroundColor = log.emotion_color;
+            dot.title = `${log.emotion_description} ${log.emotion_emoticon || ''}`;
+            dotsContainer.appendChild(dot);
+          });
+          slot.appendChild(dotsContainer);
+        }
 
         // Show log details on click
         slot.onclick = () => {
