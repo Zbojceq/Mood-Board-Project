@@ -230,14 +230,12 @@ def emotion_create():
         )
         db.session.add(new_emotion)
         db.session.commit()
-        flash('Emotion created successfully!', 'success')
         return redirect(url_for('main'))
-    else:
-        flash('Please fill in all fields.', 'danger')
     return render_template('emotion_create.html', form=form)
 
 
 #WRITTEN LOGS APPEAR IN POPUP FOR NOW AS IT NEEDS ADDICTIONAL FRONTEND DONE, BOX WILL APPEAR IN FINAL PROJECT
+#IN THAT WINDOW U ALSO WILL BE ABLE TO DELETE LOGS
 
 @app.route('/main', methods=['GET', 'POST'])
 @login_required
@@ -261,8 +259,7 @@ def main():
         )
         db.session.add(new_log)
         db.session.commit()
-        flash('Event added successfully!', 'success')
-
+        
     logs = CalendarLog.query.filter_by(user_id=current_user.id).all()
     logs_dict = []
     logs_by_date = defaultdict(list)

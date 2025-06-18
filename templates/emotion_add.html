@@ -184,7 +184,11 @@
         {{ form.hidden_tag() }}
         <h1>New mood log</h1>
         {{ form.log_date(class = "date-input", max=now.strftime('%Y-%m-%d')) }}
-        {{ form.log_time(class = "date-input", max=now.strftime('%H:%M')) }}
+        {% if form.log_date.data and form.log_date.data|string == now.strftime('%Y-%m-%d') %}
+          {{ form.log_time(max=now.strftime('%H:%M'), class="date-input") }}
+        {% else %}
+          {{ form.log_time(class="date-input") }}
+        {% endif %}
         {{ form.description(placeholder="Write your log here...", class = "textarea") }}
 
         <div class="mood-section">
