@@ -18,24 +18,20 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 app.config['SECRET_KEY'] = '123456789' 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy(app)
-login_manager = LoginManager() #implementuje moduł logowania 
+login_manager = LoginManager() 
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Czas trwania sesji
-csrf = CSRFProtect(app)  # Inicjalizacja CSRF Protect
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  
+csrf = CSRFProtect(app)  
 
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USERNAME'] = 'moodboardwebapp@gmail.com'
-app.config['MAIL_PASSWORD'] = 'sqlpqjjnqdwxskiv'  # Use an app password, not your main password
+app.config['MAIL_PASSWORD'] = 'sqlpqjjnqdwxskiv' 
 
 mail = Mail(app)
-
-
-#MoodBoardTestAccount983! 
-#moodboardwebapp@gmail.com
 
 
 
@@ -131,6 +127,7 @@ def hello_user():
 
 #THESE ARE FOR TESTING, ITS LEFT HERE FOR FUTURE TEST PURPOSES
 
+'''
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -141,7 +138,7 @@ def dashboard():
     for i in range(len(current_user.notifications)):
         print(f'Notification {i}: Times: {current_user.notifications[i].notification_times}, Enabled: {current_user.notifications[i].notification_enabled}')
     return 
-'''
+
 @app.route('/add_test')
 @login_required
 def add_test():
@@ -160,37 +157,6 @@ def add_test():
 
 
 '''
-
-
-
-####### THESE ARE NOT IMPLEMENTED 
-'''
-@app.route('/start')
-def start():
-    return render_template('start.html')
-
-@app.route('/quotes')
-def quotes():
-    return render_template('quotes.html')   
-
-@app.route('/relation_stats')
-def relation_stats():
-    return render_template('relation_stats.html')   
-
-@app.route('/friends')
-def friends():
-    return render_template('friends.html')  
-
-@app.route('/relation_notifs')
-def relation_notifs():
-    return render_template('relation_notifs.html')  
-
-
-@app.route('/avatar')
-def avatar():
-    return render_template('avatar.html')  
-'''
-
 
 
 
@@ -262,8 +228,6 @@ def emotion_create():
     return render_template('emotion_create.html', form=form)
 
 
-#WRITTEN LOGS APPEAR IN POPUP FOR NOW AS IT NEEDS ADDICTIONAL FRONTEND DONE, BOX WILL APPEAR IN FINAL PROJECT
-#IN THAT WINDOW U ALSO WILL BE ABLE TO DELETE LOGS
 
 @app.route('/main', methods=['GET', 'POST'])
 @login_required
@@ -293,6 +257,7 @@ def main():
     logs_by_date = defaultdict(list)
     for log in logs:
         log_dict = {
+            'id': log.id,
             'event_date': log.event_date.strftime('%Y-%m-%d'),
             'event_time': log.event_time.strftime('%H:%M') if log.event_time else "",
             'description': log.description,
@@ -312,6 +277,7 @@ def daily():
     logs_dict = []
     for log in logs:
         logs_dict.append({
+            'id': log.id,
             'event_date': log.event_date.strftime('%Y-%m-%d'),
             'event_time': log.event_time.strftime('%H:%M') if log.event_time else None,
             'description': log.description,
@@ -321,9 +287,21 @@ def daily():
         })
     return render_template('daily.html', logs=logs_dict)
 
+@app.route('/delete_log', methods=['POST'])
+@login_required
+@csrf.exempt
+def delete_log():
+    data = request.get_json()
+    log_id = data.get('id')
+    if not log_id:
+        return jsonify({'success': False, 'error': 'No log id provided'}), 400
+    log = CalendarLog.query.filter_by(id=log_id, user_id=current_user.id).first()
+    if log:
+        db.session.delete(log)
+        db.session.commit()
+        return jsonify({'success': True})
+    return jsonify({'success': False, 'error': 'Log not found'}), 404
 
-
-## THESE TWO ARE NOT CODED YET (notifs are planned be for final, settings are just simple buttons not important for whole project)
 
 @app.route('/notifs', methods=['GET', 'POST'])
 @login_required
@@ -360,13 +338,17 @@ def notifs():
 def get_notif_data():
     notification = Notification.query.filter_by(user_id=current_user.id).first()
     if notification:
-        # Convert time objects to string (HH:MM) or None
         times = [t.strftime('%H:%M') if t else None for t in notification.notification_times]
         return jsonify({
             'notification_times': times,
             'notification_enabled': notification.notification_enabled
         })
     return jsonify({'error': 'No notification settings found.'}), 404
+
+
+
+
+
 
 
 @app.route('/settings', methods=['GET', 'POST', 'PATCH', 'DELETE'])
