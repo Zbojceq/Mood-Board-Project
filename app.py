@@ -1,12 +1,17 @@
 from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from forms import LoginForm, RegisterForm, EmotionForm, CalendarLogForm
+from forms import LoginForm, RegisterForm, EmotionForm, CalendarLogForm, NotificationForm
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import timedelta
 from flask_wtf.csrf import CSRFProtect
 from datetime import datetime
 from collections import Counter, defaultdict
+from flask_mail import Mail, Message
+from sqlalchemy.types import PickleType
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
@@ -18,6 +23,20 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # Czas trwania sesji
 csrf = CSRFProtect(app)  # Inicjalizacja CSRF Protect
+
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'moodboardwebapp@gmail.com'
+app.config['MAIL_PASSWORD'] = 'sqlpqjjnqdwxskiv'  # Use an app password, not your main password
+
+mail = Mail(app)
+
+
+#MoodBoardTestAccount983! 
+#moodboardwebapp@gmail.com
+
 
 
 @login_manager.user_loader
@@ -32,6 +51,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(150), nullable=False)
     calendar_logs = db.relationship('CalendarLog', backref='user', lazy=True)
     emotions = db.relationship('Emotion', backref='user', lazy=True)
+    notifications = db.relationship('Notification', backref='user', lazy=True)
 
 class CalendarLog(UserMixin, db.Model):
     __tablename__ = 'calendar_logs'
@@ -50,6 +70,12 @@ class Emotion(db.Model):
     emotion_description = db.Column(db.String(255), nullable=False)
     emotion_emoticon = db.Column(db.String(255), nullable=True)
     color = db.Column(db.String(255), nullable=False)
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    notification_times = db.Column(PickleType, nullable=False, default=lambda: [None, None, None, None])
+    notification_enabled = db.Column(PickleType, nullable=False, default=lambda: [False, False, False, False])
 
 with app.app_context():
     db.create_all() 
@@ -104,7 +130,7 @@ def hello_user():
 
 
 #THESE ARE FOR TESTING, ITS LEFT HERE FOR FUTURE TEST PURPOSES
-'''
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -112,8 +138,10 @@ def dashboard():
         print(f'Emotion: {current_user.emotions[i].emotion_description}, Emoticon: {current_user.emotions[i].emotion_emoticon}, Color: {current_user.emotions[i].color}')
     for i in range(len(current_user.calendar_logs)):
         print(f'Log {i}: {current_user.calendar_logs[i].event_date} {current_user.calendar_logs[i].event_time} {current_user.calendar_logs[i].description} {current_user.calendar_logs[i].emotion_color} {current_user.calendar_logs[i].emotion_description} {current_user.calendar_logs[i].emotion_emoticon}')
+    for i in range(len(current_user.notifications)):
+        print(f'Notification {i}: Times: {current_user.notifications[i].notification_times}, Enabled: {current_user.notifications[i].notification_enabled}')
     return 
-
+'''
 @app.route('/add_test')
 @login_required
 def add_test():
@@ -297,12 +325,92 @@ def daily():
 
 ## THESE TWO ARE NOT CODED YET (notifs are planned be for final, settings are just simple buttons not important for whole project)
 
-@app.route('/notifs')
+@app.route('/notifs', methods=['GET', 'POST'])
 @login_required
 def notifs():
-    return render_template('notifs.html')
+    form = NotificationForm()
+    notification = Notification.query.filter_by(user_id=current_user.id).first()
+    if not notification:
+        notification = Notification(user_id=current_user.id, notification_times=[None, None, None, None], notification_enabled=[False, False, False, False])
+        db.session.add(notification)
+        db.session.commit()
+    print(f'Notification: {notification}')
+    if request.method == 'POST':
+        notification.notification_times = [
+            form.notification_time_morning.data,
+            form.notification_time_afternoon.data,
+            form.notification_time_evening.data,
+            form.notification_time_night.data
+        ]
+        notification.notification_enabled = [
+            bool(form.notification_enabled_morning.data),
+            bool(form.notification_enabled_afternoon.data),
+            bool(form.notification_enabled_evening.data),
+            bool(form.notification_enabled_night.data)
+        ]
+        db.session.commit()
+        print('Notification settings updated!', 'success')
+        schedule_user_notifications(scheduler)
+        return redirect(url_for('notifs'))
+    return render_template('notifs.html', form=form)
+
+
+@app.route('/get_notif_data', methods=['POST'])
+@login_required
+def get_notif_data():
+    notification = Notification.query.filter_by(user_id=current_user.id).first()
+    if notification:
+        # Convert time objects to string (HH:MM) or None
+        times = [t.strftime('%H:%M') if t else None for t in notification.notification_times]
+        return jsonify({
+            'notification_times': times,
+            'notification_enabled': notification.notification_enabled
+        })
+    return jsonify({'error': 'No notification settings found.'}), 404
+
 
 @app.route('/settings')
 @login_required
 def settings():
     return render_template('settings.html')
+
+
+
+
+
+def send_notification_to_user(user, notif_type):
+    with app.app_context():
+        msg = Message(
+            subject="Your Daily Mood Board Reminder",
+            sender=app.config['MAIL_USERNAME'],
+            recipients=[user.email],
+            body=f"Don't forget to log your {notif_type} mood today!"
+        )
+        mail.send(msg)
+
+def schedule_user_notifications(scheduler):
+    with app.app_context():
+        users = User.query.all()
+        for user in users:
+            notification = Notification.query.filter_by(user_id=user.id).first()
+            if notification:
+                times = notification.notification_times
+                enabled = notification.notification_enabled
+                labels = ['Morning', 'Afternoon', 'Evening', 'Night']
+                for i in range(4):
+                    if enabled[i] and times[i]:
+                        hour = times[i].hour
+                        minute = times[i].minute
+                        job_id = f"notif_{user.id}_{i}"
+                        scheduler.remove_job(job_id=job_id, jobstore=None) if job_id in [j.id for j in scheduler.get_jobs()] else None
+                        scheduler.add_job(
+                            send_notification_to_user,
+                            trigger=CronTrigger(hour=hour, minute=minute),
+                            args=[user, labels[i]],
+                            id=job_id,
+                            replace_existing=True
+                        )
+
+scheduler = BackgroundScheduler()
+schedule_user_notifications(scheduler)
+scheduler.start()

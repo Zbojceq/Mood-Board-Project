@@ -238,67 +238,63 @@
   </style>
 </head>
 <body>
-  <!--
-  <div class="sidebar">
-    <i class="fas fa-home"></i>
-    <i class="fas fa-calendar-alt"></i>
-    <i class="fas fa-bell"></i>
-    <i class="fas fa-cog"></i>
-  </div>
-  -->
 
 
   <div class="container">
-    <div class="card">
+    <form class="card" method="POST">
       <h2>Notification Settings</h2>
-
-
+      {{ form.hidden_tag() }}
 
       <div class="reminder-time">
         <div class="time-box morning">
           <h4>Morning</h4>
-          <input type="time" id="reminderTimeMorning" value="08:00">
+          {{ form.notification_time_morning(class="time-input", id="reminderTimeMorning", min="06:00", max="11:59") }}
         </div>
         <div class="time-box afternoon">
           <h4>Afternoon</h4>
-          <input type="time" id="reminderTimeAfter" value="13:00">
+          {{ form.notification_time_afternoon(class="time-input", id="reminderTimeAfter", min="12:00", max="17:59") }}
         </div>
         <div class="time-box evening">
           <h4>Evening</h4>
-          <input type="time" id="reminderTimeEvening" value="18:30">
+          {{ form.notification_time_evening(class="time-input", id="reminderTimeEvening", min="18:00", max="23:59") }}
         </div>
         <div class="time-box night">
           <h4>Night</h4>
-          <input type="time" id="reminderTimeNight" value="22:00">
+          {{ form.notification_time_night(class="time-input", id="reminderTimeNight", min="00:00", max="05:59") }}
         </div>
       </div>
 
-
       <div class="toggle">
-        <label class="switch" style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
-            <input type="checkbox" id="toggleReminderMorning" checked />
+        <div>
+          <label class="switch">
+            {{ form.notification_enabled_morning(id="toggleReminderMorning") }}
             <span class="slider"></span>
-        </label>
-        <label class="switch" style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
-            <input type="checkbox" id="toggleReminderAfter" checked />
+          </label>
+        </div>
+        <div>
+          <label class="switch">
+            {{ form.notification_enabled_afternoon(id="toggleReminderAfter") }}
             <span class="slider"></span>
-        </label>
-        <label class="switch" style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
-            <input type="checkbox" id="toggleReminderEvening" checked />
+          </label>
+        </div>
+        <div>
+          <label class="switch">
+            {{ form.notification_enabled_evening(id="toggleReminderEvening") }}
             <span class="slider"></span>
-        </label>
-        <label class="switch" style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
-            <input type="checkbox" id="toggleReminderNight" checked />
+          </label>
+        </div>
+        <div>
+          <label class="switch">
+            {{ form.notification_enabled_night(id="toggleReminderNight") }}
             <span class="slider"></span>
-        </label>
+          </label>
+        </div>
       </div>
-
 
       <div class="buttons">
-        <button class="btn add"><i class="fas fa-plus"></i> Add</button>
-        <button class="btn"><i class="fas fa-eye"></i> View</button>
+        <button class="btn add" type="submit"><i class="fas fa-plus"></i> Add</button>
       </div>
-    </div>
+    </form>
   </div>
 
   <script>
@@ -309,14 +305,53 @@
       { toggleId: 'toggleReminderNight', inputId: 'reminderTimeNight' }
     ];
 
-    timeBoxes.forEach(box => {
-      const toggle = document.getElementById(box.toggleId);
-      const input = document.getElementById(box.inputId);
-      function updateState() {
-        input.disabled = !toggle.checked;
-      }
-      updateState();
-      toggle.addEventListener('change', updateState);
+    // Update UI from DB
+    function getCSRFToken() {
+      // Flask-WTF renders a hidden input with name="csrf_token"
+      const csrfInput = document.querySelector('input[name="csrf_token"]');
+      return csrfInput ? csrfInput.value : '';
+    }
+
+    function updateNotifUIFromDB() {
+      fetch('/get_notif_data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCSRFToken()
+        },
+        credentials: 'same-origin'
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.notification_times && data.notification_enabled) {
+            for (let i = 0; i < 4; i++) {
+              const toggle = document.getElementById(timeBoxes[i].toggleId);
+              const input = document.getElementById(timeBoxes[i].inputId);
+              if (toggle) toggle.checked = !!data.notification_enabled[i];
+              if (input && data.notification_times[i]) input.value = data.notification_times[i].slice(0,5); // HH:MM
+              // Enable/disable time input based on toggle
+              if (toggle && input) input.disabled = !toggle.checked;
+            }
+          }
+        });
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNotifUIFromDB();
+      timeBoxes.forEach(box => {
+        const toggle = document.getElementById(box.toggleId);
+        const input = document.getElementById(box.inputId);
+        function updateState() {
+          if (toggle && input) {
+            input.disabled = !toggle.checked;
+          }
+        }
+        updateState();
+        if (toggle) {
+          toggle.addEventListener('change', updateState);
+        }
+      });
     });
   </script>
 </body>

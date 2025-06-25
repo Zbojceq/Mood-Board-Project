@@ -28,12 +28,23 @@ class EmotionForm(FlaskForm):
     submit = SubmitField('Create Emoticon')
 
 class CalendarLogForm(FlaskForm):
-    log_date = DateField("Log Date", widget=DateInput(), validators=[DataRequired()])   # Format: YYYY-MM-DD
-    log_time = TimeField("Log Time", widget=TimeInput(), validators=[DataRequired()]) # Format: HH:MM
+    log_date = DateField("Log Date", widget=DateInput(), validators=[DataRequired()])
+    log_time = TimeField("Log Time", widget=TimeInput(), validators=[DataRequired()])
     emotions = SelectField('Emotions', widget=Select(),
                             choices=emotions_list, validators=[DataRequired()])
     description = StringField('Description', widget=TextArea(), validators=[DataRequired(), Length(min=1, max=200)])
     submit = SubmitField('Add Event')
+
+class NotificationForm(FlaskForm):
+    notification_time_morning = TimeField("Notification Morning", widget=TimeInput(), validators=[DataRequired()])
+    notification_time_afternoon = TimeField("Notification Afternoon", widget=TimeInput(), validators=[DataRequired()])
+    notification_time_evening = TimeField("Notification Evening", widget=TimeInput(), validators=[DataRequired()])
+    notification_time_night = TimeField("Notification Night", widget=TimeInput(), validators=[DataRequired()])
+    notification_enabled_morning = BooleanField('Enable Morning', default=False)
+    notification_enabled_afternoon = BooleanField('Enable Afternoon', default=False)
+    notification_enabled_evening = BooleanField('Enable Evening', default=False) 
+    notification_enabled_night = BooleanField('Enable Night', default=False)     
+    submit = SubmitField('Add Notification')
  
 
 def validate_username(self, username):
