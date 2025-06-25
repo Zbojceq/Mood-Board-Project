@@ -9,12 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
     <link rel="stylesheet" href="static/settings.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <script src="static/settings.js" defer></script>
 </head>
 <body>
-
-
     <div class="container">
         <div class="content">
             <div class="lottie-container">
@@ -26,62 +25,84 @@
                 </lottie-player>
             </div>
 
-            <div class="buttons">
-                <button>Delete Account</button>
-                <button>Log Out</button>
+            <div class="settings-box">
+                <h2>Account Settings</h2>
+                <div class="account-info-row">
+                    <span id="current-username"></span>
+                    <button class="change-btn" id="change-username-btn">Change Username</button>
+                </div>
+                <div class="account-info-row">
+                    <span id="current-email"></span>
+                    <button class="change-btn" id="change-email-btn">Change Email</button>
+                </div>
+                <div class="account-info-row">
+                    <span>Password: ••••••••</span>
+                    <button class="change-btn" id="change-password-btn">Change Password</button>
+                </div>
             </div>
 
-            <div class="settings">
-                <section class="settings-section" id="accountSettings">
-                    <h2>Account Settings</h2>
-                    <div class="content">
-                        <input type="text" placeholder="Username">
-                        <input type="email" placeholder="Email">
-                        <input type="password" placeholder="Change Password">
-                        <input type="file" accept="image/*" onchange="previewAvatar(event)">
-                    </div>
-                </section>
+            <!-- Popups -->
+            <div class="popup" id="popup-username">
+                <div class="popup-content">
+                    <h3>Change Username</h3>
+                    <form id="form-username">
+                        <input type="password" name="password" placeholder="Current Password" required>
+                        <input type="text" name="new_username" placeholder="New Username" required>
+                        <div class="popup-error" id="error-username"></div>
+                        <div class="popup-buttons">
+                            <button type="submit">Save</button>
+                            <button type="button" class="close-popup">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="popup" id="popup-email">
+                <div class="popup-content">
+                    <h3>Change Email</h3>
+                    <form id="form-email">
+                        <input type="password" name="password" placeholder="Current Password" required>
+                        <input type="email" name="new_email" placeholder="New Email" required>
+                        <div class="popup-error" id="error-email"></div>
+                        <div class="popup-buttons">
+                            <button type="submit">Save</button>
+                            <button type="button" class="close-popup">Cancel</button>
+                        </div>
+                    </form>  
+                </div>
+            </div>
+            <div class="popup" id="popup-password">
+                <div class="popup-content">
+                    <h3>Change Password</h3>
+                    <form id="form-password">
+                        <input type="password" name="old_password" placeholder="Current Password" required>
+                        <input type="password" name="new_password1" placeholder="New Password" required>
+                        <input type="password" name="new_password2" placeholder="Repeat New Password" required>
+                        <div class="popup-error" id="error-password"></div>
+                        <div class="popup-buttons">
+                            <button type="submit">Save</button>
+                            <button type="button" class="close-popup">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-                <section class="settings-section" id="personalization">
-                    <h2>Personalization</h2>
-                    <div class="content">
-                        <label><input type="checkbox"> Show motivational quotes at start</label>
-                    </div>
-                </section>
+            <div class="delete-account-section">
+                <button id="delete-account-btn">Delete Account</button>
+            </div>
 
-                <section class="settings-section" id="notifications">
-                    <h2>Notifications</h2>
-                </section>
-
-                <section class="settings-section" id="privacy">
-                    <h2>Privacy & Relationships</h2>
-                    <div class="content">
-                        <button>Manage invitations</button>
-                        <button>Block/Unblock users</button>
-                        <label><input type="checkbox"> Be visible to others</label>
-                        <button>Manage calendar visibility</button>
-                    </div>
-                </section>
-
-                <section class="settings-section" id="aboutApp">
-                    <h2>About App</h2>
-                    <div class="content">
-                        <p>Mood Board App v1.0</p>
-                        <p>Created by Clockwork</p>
-                        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a>
-                    </div>
-                </section>
-
-                <section class="settings-section" id="helpSupport">
-                    <h2>Help & Support</h2>
-                    <div class="content">
-                        <a href="#">FAQ</a> | <a href="#">Contact Support</a> | <a href="#">User Guide</a>
-                    </div>
-                </section>
-
-                <div class="save-button">
-                    <button>Save Changes</button>
-                    <button>Reset to Defaults</button>
+            <!-- Delete Account Popup -->
+            <div class="popup" id="popup-delete-account">
+                <div class="popup-content">
+                    <h3>Delete Account</h3>
+                    <form id="form-delete-account">
+                        <input type="password" name="password" placeholder="Current Password" required>
+                        <input type="text" name="confirm_text" placeholder="Type 'confirm' to delete" required>
+                        <div class="popup-error" id="error-delete-account"></div>
+                        <div class="popup-buttons">
+                            <button type="submit" style="background:#d32f2f;">Delete</button>
+                            <button type="button" class="close-popup">Cancel</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

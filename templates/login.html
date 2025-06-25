@@ -23,7 +23,8 @@
             </p>
             <p>
                 <br>
-                {{ form.remember() }} Remember Me
+                <input type="checkbox" name="remember" id="rememberMeBtn" class="remember-checkbox" style="display:none;">
+                <label for="rememberMeBtn" class="remember-checkbox-label">Remember Me</label>
                 <br>
             </p>
                 {% with messages = get_flashed_messages() %}
@@ -38,8 +39,7 @@
             <button type="submit" class="login">Login</button>
         </form>
         <div class="options">
-            <a href="{{ url_for('register') }}">Register</a> |
-            <a href="#" id="forgot">Forgot Password?</a>
+            <a href="{{ url_for('register') }}">Register</a>
         </div>
     </div>
 

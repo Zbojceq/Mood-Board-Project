@@ -177,6 +177,29 @@
       transform: scale(1.05);
     }
 
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal .card {
+      max-width: 500px;
+      width: 90%;
+      padding: 2rem;
+      text-align: center;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
     @media (max-width: 768px) {
       .card {
         padding: 2rem 1.5rem;
@@ -223,7 +246,20 @@
     </div>
   </div>
 
+  <div id="infoModal" class="modal" style="display:flex;">
+    <div class="card" style="max-width: 420px; padding:2.2rem 2rem 2rem 2rem; text-align:center;">
+      <h2 style="margin-bottom:0.7em;">Feature Info</h2>
+      <div style="font-size:1.1em; color:#6a1b9a; font-weight:500; margin-bottom:0.7em;">Custom emotions are not usable yet.</div>
+      <div style="color:#444; margin-bottom:1.2em;">You can create your own emotions, but you can't use them in mood logs for now.<br><br>This feature was part of optional goals and wasn't added</div>
+      <button class="submit-btn" onclick="closeInfoModal()">OK</button>
+    </div>
+  </div>
+
   <script>
+    function closeInfoModal() {
+      document.getElementById('infoModal').style.display = 'none';
+    }
+
     function updatePreview() {
       const name = document.getElementById("name").value || "Your Emotion";
       const emoticon = document.getElementById("emoticon").value;
@@ -233,9 +269,10 @@
       preview.style.backgroundColor = color;
     }
 
-
-
-    window.onload = updatePreview;
+    window.onload = function() {
+      updatePreview();
+      document.getElementById('infoModal').style.display = 'flex';
+    }
   </script>
 </body>
 </html>

@@ -145,6 +145,27 @@
       transform: translateY(-2px);
     }
 
+    .mood-list-select {
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    .mood-dropdown {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      font-size: 18px;
+      background: #f8fafc;
+      color: #444;
+      margin-bottom: 10px;
+      transition: border-color 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .mood-dropdown:focus {
+      border-color: #a18cd1;
+      outline: none;
+    }
+
     @media (max-width: 600px) {
       .container {
         flex-direction: column;
@@ -193,7 +214,14 @@
 
         <div class="mood-section">
         <label>Choose your mood</label>
-        {{ form.emotions(class = "moods") }}
+        <div class="mood-list-select">
+          <select id="moodSelect" name="emotions" class="mood-dropdown">
+            <option value="" disabled selected>Select a mood…</option>
+            {% for value, label in form.emotions.choices %}
+              <option value="{{ value }}" {% if form.emotions.data == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
         </div>
 
         <p>
@@ -229,6 +257,15 @@
         previewImage.style.display = 'none';
       }
     });
+
+    // Sync dropdown with WTForms hidden field
+    const moodSelect = document.getElementById('moodSelect');
+    if (moodSelect) {
+      moodSelect.addEventListener('change', function() {
+        const hidden = document.querySelector('select[name="emotions"]');
+        if (hidden) hidden.value = this.value;
+      });
+    }
   </script>
 </body>
 </html>

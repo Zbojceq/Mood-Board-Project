@@ -49,9 +49,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
-    calendar_logs = db.relationship('CalendarLog', backref='user', lazy=True)
-    emotions = db.relationship('Emotion', backref='user', lazy=True)
-    notifications = db.relationship('Notification', backref='user', lazy=True)
+    calendar_logs = db.relationship('CalendarLog', backref='user', lazy=True, cascade='all, delete-orphan')
+    emotions = db.relationship('Emotion', backref='user', lazy=True, cascade='all, delete-orphan')
+    notifications = db.relationship('Notification', backref='user', lazy=True, cascade='all, delete-orphan')
 
 class CalendarLog(UserMixin, db.Model):
     __tablename__ = 'calendar_logs'
@@ -369,11 +369,74 @@ def get_notif_data():
     return jsonify({'error': 'No notification settings found.'}), 404
 
 
-@app.route('/settings')
+@app.route('/settings', methods=['GET', 'POST', 'PATCH', 'DELETE'])
 @login_required
 def settings():
-    return render_template('settings.html')
-
+    if request.method == 'GET':
+        return render_template('settings.html')
+    if request.method == 'POST':
+        return jsonify({
+            'username': current_user.username,
+            'email': current_user.email
+        })
+    if request.method == 'PATCH':
+        data = request.get_json()
+        action = data.get('action')
+        if action == 'change_username':
+            password = data.get('password')
+            new_username = data.get('new_username')
+            if not check_password_hash(current_user.password, password):
+                return jsonify({'success': False, 'error': 'Incorrect password.'})
+            if not new_username or len(new_username) < 3:
+                return jsonify({'success': False, 'error': 'Username too short.'})
+            if User.query.filter_by(username=new_username).first():
+                return jsonify({'success': False, 'error': 'Username already taken.'})
+            current_user.username = new_username
+            db.session.commit()
+            return jsonify({'success': True})
+        elif action == 'change_email':
+            password = data.get('password')
+            new_email = data.get('new_email')
+            if not check_password_hash(current_user.password, password):
+                return jsonify({'success': False, 'error': 'Incorrect password.'})
+            if not new_email or '@' not in new_email:
+                return jsonify({'success': False, 'error': 'Invalid email.'})
+            if User.query.filter_by(email=new_email).first():
+                return jsonify({'success': False, 'error': 'Email already in use.'})
+            current_user.email = new_email
+            db.session.commit()
+            return jsonify({'success': True})
+        elif action == 'change_password':
+            old_password = data.get('old_password')
+            new_password1 = data.get('new_password1')
+            new_password2 = data.get('new_password2')
+            if not check_password_hash(current_user.password, old_password):
+                return jsonify({'success': False, 'error': 'Incorrect current password.'})
+            if not new_password1 or len(new_password1) < 4:
+                return jsonify({'success': False, 'error': 'Password too short.'})
+            if new_password1 != new_password2:
+                return jsonify({'success': False, 'error': 'Passwords do not match.'})
+            current_user.password = generate_password_hash(new_password1, method='pbkdf2')
+            db.session.commit()
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'Invalid action.'})
+    if request.method == 'DELETE':
+        data = request.get_json(silent=True) or {}
+        password = data.get('password')
+        if not password or not check_password_hash(current_user.password, password):
+            return jsonify({'success': False, 'error': 'Incorrect password.'})
+        user = User.query.get(current_user.id)
+        user_id = user.id  # Save id before logout
+        logout_user() 
+        # Remove user after logout (session is now anonymous)
+        user = User.query.get(user_id)
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return jsonify({'success': True, 'redirect': url_for('login')})
+        else:
+            return jsonify({'success': False, 'error': 'User not found.'})
 
 
 
